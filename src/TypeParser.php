@@ -19,13 +19,18 @@ use phpDocumentor\Reflection\DocBlockFactory;
 class TypeParser
 {
     const MODE_JSON_SCHEMA = 1;
-    const MODE_OPEN_API = 2;
+    const MODE_OPEN_API    = 2;
+    const MODE_REF_SCHEMA  = 4;
 
-    protected $mode;
+    protected $mode = 0;
     protected $builtinTypes = [];
 
-    public function __construct()
+    protected $schemas = [];
+
+    public function __construct($mode)
     {
+        $this->mode = $mode;
+
         $this->registerBuiltinType(IntegerType::class);
         $this->registerBuiltinType(NumberType::class);
         $this->registerBuiltinType(StringType::class);
@@ -78,7 +83,7 @@ class TypeParser
     {
         return [
             'type' => 'array',
-            'items' => $this->parse($definition[0], $this->mode),
+            'items' => $this->parse($definition[0]),
         ];
     }
 
@@ -132,12 +137,20 @@ class TypeParser
             return $this->parseInputType($definition);
         }
 
+        $definitionName = $definition::name();
+
+        if (($this->mode & self::MODE_REF_SCHEMA) && isset($this->schemas[$definition])) {
+            return [
+                '$ref' => '#/components/schemas/' . $definitionName,
+            ];
+        }
+
         $reflection = new \ReflectionClass($definition);
         $properties = [];
         $requiredFields = [];
 
-        foreach ($reflection->getStaticProperties() as $property => $definition) {
-            list($required, $schema) = $this->parseField($definition);
+        foreach ($reflection->getStaticProperties() as $property => $tmpDefinition) {
+            list($required, $schema) = $this->parseField($tmpDefinition);
             $properties[$property] = $schema;
 
             if ($required) {
@@ -145,11 +158,20 @@ class TypeParser
             }
         }
 
-        return [
+        $schema = [
             'type' => 'object',
             'properties' => $properties,
             'required' => $requiredFields,
         ];
+
+        if ($this->mode & self::MODE_REF_SCHEMA) {
+            $this->schemas[$definitionName] = $schema;
+            return [
+                '$ref' => '#/components/schemas/' . $definitionName,
+            ];
+        } else {
+            return $schema;
+        }
     }
 
     protected function parseScalar($definition)
@@ -164,9 +186,9 @@ class TypeParser
 
         $schema = $typeClass::toArray();
 
-        if ($this->mode === self::MODE_JSON_SCHEMA && $nullable) {
+        if (($this->mode & self::MODE_JSON_SCHEMA) && $nullable) {
             $schema['type'] = [$schema['type'], 'null'];
-        } else if ($this->mode === self::MODE_OPEN_API && $nullable) {
+        } else if (($this->mode & self::MODE_OPEN_API) && $nullable) {
             $schema['nullable'] = $nullable;
         }
 
@@ -190,10 +212,8 @@ class TypeParser
      * @param integer $mode
      * @return array
      */
-    public function parse($definition, $mode = self::MODE_JSON_SCHEMA)
+    public function parse($definition)
     {
-        $this->mode = $mode;
-
         if (is_array($definition)) {
             return $this->parseArray($definition);
         } else if (is_string($definition)) {
@@ -203,5 +223,10 @@ class TypeParser
         } else {
             throw new \InvalidArgumentException('The definition is invalid');
         }
+    }
+
+    public function getSchemas()
+    {
+        return $this->schemas;
     }
 }

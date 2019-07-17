@@ -305,10 +305,56 @@ class TypeTest extends TestCase
      */
     public function testTypeToArray($type, $expect1, $expect2)
     {
-        $parser = new TypeParser();
-        $this->assertEquals($expect1, $parser->parse($type, TypeParser::MODE_JSON_SCHEMA));
+        $parser = new TypeParser(TypeParser::MODE_JSON_SCHEMA);
+        $this->assertEquals($expect1, $parser->parse($type));
 
-        $this->assertEquals($expect2 ?? $expect1, $parser->parse($type, TypeParser::MODE_OPEN_API));
+        $parser = new TypeParser(TypeParser::MODE_OPEN_API);
+        $this->assertEquals($expect2 ?? $expect1, $parser->parse($type));
+    }
+
+
+    public function typeToArrayWithRefCases()
+    {
+        return [
+            [
+                Product002Type::class,
+                [
+                    '$ref' => '#/components/schemas/Product002',
+                ],
+                [
+                    'Product002' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'field1' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'string',
+                                ],
+                            ],
+                            'field2' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'string',
+                                    'nullable' => true,
+                                ],
+                            ],
+                        ],
+                        'required' => [],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider typeToArrayWithRefCases
+     */
+    public function testTypeToArrayWithRef($type, $expect, $schema)
+    {
+        $parser = new TypeParser(TypeParser::MODE_OPEN_API | TypeParser::MODE_REF_SCHEMA);
+
+        $this->assertEquals($expect, $parser->parse($type));
+        $this->assertEquals($schema, $parser->getSchemas());
     }
 
     public function inputDataCases()

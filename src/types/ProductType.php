@@ -13,7 +13,11 @@ abstract class ProductType implements Type
 {
     public static function name()
     {
-        return static::class;
+        $parts = explode('\\', static::class);
+
+        $name = end($parts);
+
+        return substr($name, 0, strlen($name) - 4);
     }
 
     public static function toArray()

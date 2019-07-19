@@ -1,6 +1,6 @@
 {
     "name": "rethink/typedphp",
-    "description": "A type system for PHP and json",
+    "description": "A type system for PHP to describe RESTFul APIs in a declarative form",
     "license": "MIT",
     "authors": [
         {

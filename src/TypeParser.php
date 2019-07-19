@@ -151,6 +151,11 @@ class TypeParser
 
         foreach ($reflection->getStaticProperties() as $property => $tmpDefinition) {
             list($required, $schema) = $this->parseField($tmpDefinition);
+            $comment = $reflection->getProperty($property)->getDocComment();
+            if ($comment) {
+                $docblock = DocBlockFactory::createInstance()->create($comment);
+                $schema['title'] = trim($docblock->getSummary() . "\n\n" . $docblock->getDescription()->render());
+            }
             $properties[$property] = $schema;
 
             if ($required) {

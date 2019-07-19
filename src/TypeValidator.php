@@ -1,6 +1,6 @@
 <?php
 
-namespace typedphp;
+namespace rethink\typedphp;
 
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Validator;
@@ -8,7 +8,7 @@ use JsonSchema\Validator;
 /**
  * Class TypeValidator
  *
- * @package typedphp
+ * @package rethink\typedphp
  */
 class TypeValidator
 {

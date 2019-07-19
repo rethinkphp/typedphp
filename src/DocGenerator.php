@@ -1,6 +1,6 @@
 <?php
 
-namespace typedphp;
+namespace rethink\typedphp;
 
 use ReflectionClass;
 use InvalidArgumentException;
@@ -10,7 +10,7 @@ use phpDocumentor\Reflection\DocBlock;
 /**
  * Class DocGenerator
  *
- * @package typedphp;
+ * @package rethink\typedphp;
  */
 class DocGenerator
 {

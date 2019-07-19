@@ -1,11 +1,11 @@
 <?php
 
-namespace typedphp;
+namespace rethink\typedphp;
 
 /**
  * Interface ApiInterface
  *
- * @package typedphp
+ * @package rethink\typedphp
  */
 interface ApiInterface
 {

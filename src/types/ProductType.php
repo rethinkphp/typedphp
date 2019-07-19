@@ -1,13 +1,13 @@
 <?php
 
-namespace typedphp\types;
+namespace rethink\typedphp\types;
 
-use typedphp\TypeParser;
+use rethink\typedphp\TypeParser;
 
 /**
  * Class ProductType
  *
- * @package typedphp\types
+ * @package rethink\typedphp\types
  */
 abstract class ProductType implements Type
 {

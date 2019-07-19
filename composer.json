@@ -1,5 +1,5 @@
 {
-    "name": "typedphp/typedphp",
+    "name": "rethink/typedphp",
     "description": "A type system for PHP and json",
     "license": "MIT",
     "authors": [
@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "typedphp\\": "src/",
-            "typedphp\\tests\\": "tests/"
+            "rethink\\typedphp\\": "src/",
+            "rethtnk\\typedphp\\tests\\": "tests/"
         }
     }
 }

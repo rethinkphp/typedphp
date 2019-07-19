@@ -3,11 +3,11 @@
 namespace typedphp\tests;
 
 
-use typedphp\InputValidator;
-use typedphp\TypeParser;
-use typedphp\types\InputType;
-use typedphp\types\ProductType;
-use typedphp\TypeValidator;
+use rethink\typedphp\InputValidator;
+use rethink\typedphp\TypeParser;
+use rethink\typedphp\types\InputType;
+use rethink\typedphp\types\ProductType;
+use rethink\typedphp\TypeValidator;
 use PHPUnit\Framework\TestCase;
 
 /**

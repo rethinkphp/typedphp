@@ -1,11 +1,11 @@
 <?php
 
-namespace typedphp\types;
+namespace rethink\typedphp\types;
 
 /**
  * Interface PrimitiveType
  *
- * @package typedphp\types
+ * @package rethink\typedphp\types
  */
 interface PrimitiveType extends Type
 {

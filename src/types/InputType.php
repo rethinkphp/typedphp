@@ -1,11 +1,11 @@
 <?php
 
-namespace typedphp\types;
+namespace rethink\typedphp\types;
 
 /**
  * Class InputType
  *
- * @package typedphp\types
+ * @package rethink\typedphp\types
  */
 abstract class InputType extends ProductType
 {

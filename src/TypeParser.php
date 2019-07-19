@@ -1,20 +1,20 @@
 <?php
 
-namespace typedphp;
+namespace rethink\typedphp;
 
-use typedphp\types\InputType;
-use typedphp\types\IntegerType;
-use typedphp\types\ProductType;
-use typedphp\types\NumberType;
-use typedphp\types\StringType;
-use typedphp\types\TimestampType;
-use typedphp\types\Type;
+use rethink\typedphp\types\InputType;
+use rethink\typedphp\types\IntegerType;
+use rethink\typedphp\types\ProductType;
+use rethink\typedphp\types\NumberType;
+use rethink\typedphp\types\StringType;
+use rethink\typedphp\types\TimestampType;
+use rethink\typedphp\types\Type;
 use phpDocumentor\Reflection\DocBlockFactory;
 
 /**
  * Class TypeParser
  *
- * @package typedphp
+ * @package rethink\typedphp
  */
 class TypeParser
 {

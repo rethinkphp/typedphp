@@ -1,11 +1,11 @@
 <?php
 
-namespace typedphp\types;
+namespace rethink\typedphp\types;
 
 /**
  * Interface Type
  *
- * @package typedphp\types
+ * @package rethink\typedphp\types
  */
 interface Type
 {

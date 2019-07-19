@@ -1,11 +1,11 @@
 <?php
 
-namespace typedphp\types;
+namespace rethink\typedphp\types;
 
 /**
  * Class StringType
  *
- * @package typedphp\types
+ * @package rethink\typedphp\types
  */
 class StringType implements PrimitiveType
 {

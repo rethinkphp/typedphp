@@ -1,11 +1,11 @@
 <?php
 
-namespace typedphp\types;
+namespace rethink\typedphp\types;
 
 /**
  * Class IntegerType
  *
- * @package typedphp\types
+ * @package rethink\typedphp\types
  */
 class IntegerType implements PrimitiveType
 {

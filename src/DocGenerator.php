@@ -24,12 +24,17 @@ class DocGenerator
      * Generator constructor.
      *
      * @param array $apiClasses
-     * @param array $config
+     * @param TypeParser|null $parser
      */
-    public function __construct(array $apiClasses)
+    public function __construct(array $apiClasses, $parser = null)
     {
         $this->apiClasses = $apiClasses;
-        $this->parser = new TypeParser(TypeParser::MODE_OPEN_API | TypeParser::MODE_REF_SCHEMA);
+
+        if ($parser) {
+            $this->parser = $parser;
+        } else {
+            $this->parser = new TypeParser(TypeParser::MODE_OPEN_API | TypeParser::MODE_REF_SCHEMA);
+        }
     }
 
     public function buildApiObject($apiClass)

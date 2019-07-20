@@ -49,13 +49,14 @@ class DocGenerator
         $verb = $this->getStaticProperty($class, 'verb');
 
         $docblock = DocBlockFactory::createInstance()->create($class->getDocComment());
+        $parameters = $apiClass::parameters();
 
         $object = [
             'summary' => $docblock->getSummary(),
             'description' => $docblock->getDescription()->render(),
             'tags' => $this->getDocTags($docblock),
             'operationId' => $this->getStaticProperty($class, 'op'),
-            'parameters' => $this->parser->parse($apiClass::parameters()),
+            'parameters' => $parameters ? $this->parser->parse($parameters) : [],
             'responses' => (object)$this->buildResponses($apiClass, $class),
         ];
 

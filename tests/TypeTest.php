@@ -414,7 +414,7 @@ class TypeTest extends TestCase
                     ]
                 ],
                 [],
-                ['foo' => 1]
+                ['query' => ['foo' => 1]]
             ],
 
 
@@ -434,7 +434,7 @@ class TypeTest extends TestCase
                     ]
                 ],
                 [],
-                ['foo' => 1]
+                ['query' => ['foo' => 1]]
             ],
 
             // type casting failed

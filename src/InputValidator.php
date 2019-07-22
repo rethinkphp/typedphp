@@ -62,7 +62,7 @@ class InputValidator
             $data = $this->fetchData($definition['in']);
 
             if ($this->validateInternal($definition, $data, $result)) {
-                $this->data[$definition['name']] = $result;
+                $this->data[$definition['in']][$definition['name']] = $result;
             }
         }
 

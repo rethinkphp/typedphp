@@ -48,13 +48,18 @@ class DocGenerator
         $path = $this->getStaticProperty($class, 'path');
         $verb = $this->getStaticProperty($class, 'verb');
 
-        $docblock = DocBlockFactory::createInstance()->create($class->getDocComment());
+        $comment = $class->getDocComment();
+        if ($comment) {
+            $docblock = DocBlockFactory::createInstance()->create($comment);
+        } else {
+            $docblock = null;
+        }
         $parameters = $apiClass::parameters();
 
         $object = [
-            'summary' => $docblock->getSummary(),
-            'description' => $docblock->getDescription()->render(),
-            'tags' => $this->getDocTags($docblock),
+            'summary' => $docblock ? $docblock->getSummary() : '',
+            'description' => $docblock ? $docblock->getDescription()->render() : '',
+            'tags' => $docblock ? $this->getDocTags($docblock) : [],
             'operationId' => $this->getStaticProperty($class, 'op'),
             'parameters' => $parameters ? $this->parser->parse($parameters) : [],
             'responses' => (object)$this->buildResponses($apiClass, $class),

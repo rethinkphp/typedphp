@@ -99,9 +99,10 @@ class DocGenerator
             'description' => $description,
             'content' => [
                 'application/json' => [
-                    'schema' => $this->parser->parse($apiClass::requestBody()),
+                    'schema' => $this->parser->parse($bodyDefinition),
                 ],
             ],
+            'required' => true,
         ];
     }
 

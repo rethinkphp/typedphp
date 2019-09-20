@@ -85,6 +85,7 @@ class TypeTest extends TestCase
                     'properties' => [
                         'id' => ['type' => 'integer'],
                         'name' => ['type' => 'string'],
+                        'is_admin' => ['type' => 'boolean'],
                         'nullable_field' => ['type' => 'string', 'nullable' => true],
                     ],
                     'required' => ['id'],
@@ -177,6 +178,7 @@ class TypeTest extends TestCase
                             'properties' => [
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
+                                'is_admin' => ['type' => 'boolean'],
                                 'nullable_field' => [ 'type' => 'string', 'nullable' => true],
                             ],
                             'required' => ['id'],
@@ -288,6 +290,9 @@ class TypeTest extends TestCase
                             ],
                             'name' => [
                                 'type' => 'string',
+                            ],
+                            'is_admin' => [
+                                'type' => 'boolean',
                             ],
                             'nullable_field' => [
                                 'type' => 'string',

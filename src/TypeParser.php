@@ -2,6 +2,7 @@
 
 namespace rethink\typedphp;
 
+use rethink\typedphp\types\BooleanType;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\IntegerType;
 use rethink\typedphp\types\ProductType;
@@ -34,6 +35,7 @@ class TypeParser
         $this->registerBuiltinType(IntegerType::class);
         $this->registerBuiltinType(NumberType::class);
         $this->registerBuiltinType(StringType::class);
+        $this->registerBuiltinType(BooleanType::class);
 
         $this->registerBuiltinType(TimestampType::class);
     }

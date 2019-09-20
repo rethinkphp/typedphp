@@ -75,6 +75,7 @@ class TypeTest extends TestCase
                     'properties' => [
                         'id' => ['type' => 'integer'],
                         'name' => ['type' => 'string'],
+                        'is_admin' => ['type' => 'boolean'],
                         'nullable_field' => ['type' => ['string', 'null']],
                     ],
                     'required' => ['id'],
@@ -84,6 +85,7 @@ class TypeTest extends TestCase
                     'properties' => [
                         'id' => ['type' => 'integer'],
                         'name' => ['type' => 'string'],
+                        'is_admin' => ['type' => 'boolean'],
                         'nullable_field' => ['type' => 'string', 'nullable' => true],
                     ],
                     'required' => ['id'],
@@ -141,6 +143,7 @@ class TypeTest extends TestCase
                             'properties' => [
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
+                                'is_admin' => ['type' => 'boolean'],
                                 'nullable_field' => ['type' => ['string', 'null']],
                             ],
                             'required' => ['id'],
@@ -175,6 +178,7 @@ class TypeTest extends TestCase
                             'properties' => [
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
+                                'is_admin' => ['type' => 'boolean'],
                                 'nullable_field' => [ 'type' => 'string', 'nullable' => true],
                             ],
                             'required' => ['id'],
@@ -266,6 +270,9 @@ class TypeTest extends TestCase
                             'name' => [
                                 'type' => 'string',
                             ],
+                            'is_admin' => [
+                                'type' => 'boolean',
+                            ],
                             'nullable_field' => [
                                 'type' => ['string', 'null']
                             ],
@@ -283,6 +290,9 @@ class TypeTest extends TestCase
                             ],
                             'name' => [
                                 'type' => 'string',
+                            ],
+                            'is_admin' => [
+                                'type' => 'boolean',
                             ],
                             'nullable_field' => [
                                 'type' => 'string',
@@ -533,6 +543,7 @@ class Product001Type extends ProductType
 {
     public static $id = '!integer';
     public static $name = 'string';
+    public static $is_admin = 'boolean';
     public static $nullable_field = 'string?';
 }
 

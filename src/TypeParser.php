@@ -139,12 +139,18 @@ class TypeParser
             return $this->parseInputType($definition);
         }
 
+        $nullable = $definition[strlen($definition) - 1] === '?';
+
+        if ($nullable) {
+            $definition = trim($definition, '?');
+        }
+
         $definitionName = $definition::name();
 
         if (($this->mode & self::MODE_REF_SCHEMA) && isset($this->schemas[$definition])) {
-            return [
+            return $this->makeNullableObject([
                 '$ref' => '#/components/schemas/' . $definitionName,
-            ];
+            ], $nullable);
         }
 
         $reflection = new \ReflectionClass($definition);
@@ -173,12 +179,31 @@ class TypeParser
 
         if ($this->mode & self::MODE_REF_SCHEMA) {
             $this->schemas[$definitionName] = $schema;
-            return [
+            return $this->makeNullableObject([
                 '$ref' => '#/components/schemas/' . $definitionName,
-            ];
+            ], $nullable);
         } else {
+            return $this->makeNullableObject($schema, $nullable);
+        }
+    }
+    
+    protected function makeNullableObject(array $schema, $nullable)
+    {
+        if ($this->mode & self::MODE_OPEN_API) {
+            // OpenAPI specficition does not support this, just ingore the nullable setting.
+            return $schema; 
+        }
+        
+        if (! $nullable) {
             return $schema;
         }
+        
+        return [
+            'anyOf' => [
+                ['type' => 'null'],
+                $schema,
+            ]
+        ];
     }
 
     protected function parseScalar($definition)

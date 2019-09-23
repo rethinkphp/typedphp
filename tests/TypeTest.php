@@ -209,6 +209,88 @@ class TypeTest extends TestCase
             ],
 
             [
+                Product004Type::class,
+                [
+                    'type' => 'object',
+                    'properties' => [
+                        'related1' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'id' => ['type' => 'integer'],
+                                'name' => ['type' => 'string'],
+                                'is_admin' => ['type' => 'boolean'],
+                                'nullable_field' => ['type' => ['string', 'null']],
+                            ],
+                            'required' => ['id'],
+
+                        ],
+                        'related2' => [
+                            'anyOf' => [
+                                [
+                                    'type' => 'null'
+                                ],
+                                [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'field1' => [
+                                            'type' => 'array',
+                                            'items' => [
+                                                'type' => 'string',
+                                            ],
+                                        ],
+                                        'field2' => [
+                                            'type' => 'array',
+                                            'items' => [
+                                                'type' => ['string', 'null'],
+                                            ],
+                                        ],
+                                    ],
+                                    'required' => [],
+                                ]
+                            ]
+                        ],
+                    ],
+                    'required' => ['related1'],
+                ],
+                [
+                    'type' => 'object',
+                    'properties' => [
+                        'related1' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'id' => ['type' => 'integer'],
+                                'name' => ['type' => 'string'],
+                                'is_admin' => ['type' => 'boolean'],
+                                'nullable_field' => [ 'type' => 'string', 'nullable' => true],
+                            ],
+                            'required' => ['id'],
+
+                        ],
+                        'related2' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'field1' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'string',
+                                    ],
+                                ],
+                                'field2' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'string',
+                                        'nullable' => true,
+                                    ],
+                                ],
+                            ],
+                            'required' => [],
+                        ],
+                    ],
+                    'required' => ['related1'],
+                ],
+            ],
+            
+            [
                 new class extends InputType {
                     public static $limit = 'query:!number';
                     public static $offset = 'query:number?';
@@ -520,6 +602,24 @@ class TypeTest extends TestCase
                 ],
                 ['The data of "foo[0]" is invalid, string value found, but an integer is required'],
             ],
+            
+            # validate nullable object type
+            [
+                [
+                    'foo' => null,
+                ],
+                [
+                    'type' => 'object',
+                    'properties' => [
+                        'foo' => [
+                            'anyOf' => [
+                                ['type' => 'null'],
+                            ],
+                        ],
+                    ]
+                ],
+                [],
+            ]
         ];
     }
 
@@ -564,4 +664,13 @@ class Product003Type extends ProductType
 {
     public static $related1 = Product001Type::class;
     public static $related2 = Product002Type::class;
+}
+
+/**
+ * A product type with custom type field.
+ */
+class Product004Type extends ProductType
+{
+    public static $related1 = '!' . Product001Type::class;
+    public static $related2 = Product002Type::class . '?';
 }

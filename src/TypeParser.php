@@ -3,6 +3,7 @@
 namespace rethink\typedphp;
 
 use rethink\typedphp\types\BooleanType;
+use rethink\typedphp\types\DictType;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\IntegerType;
 use rethink\typedphp\types\ProductType;
@@ -36,6 +37,7 @@ class TypeParser
         $this->registerBuiltinType(NumberType::class);
         $this->registerBuiltinType(StringType::class);
         $this->registerBuiltinType(BooleanType::class);
+        $this->registerBuiltinType(DictType::class);
 
         $this->registerBuiltinType(TimestampType::class);
     }
@@ -186,18 +188,18 @@ class TypeParser
             return $this->makeNullableObject($schema, $nullable);
         }
     }
-    
+
     protected function makeNullableObject(array $schema, $nullable)
     {
         if ($this->mode & self::MODE_OPEN_API) {
             // OpenAPI specficition does not support this, just ingore the nullable setting.
-            return $schema; 
+            return $schema;
         }
-        
+
         if (! $nullable) {
             return $schema;
         }
-        
+
         return [
             'anyOf' => [
                 ['type' => 'null'],

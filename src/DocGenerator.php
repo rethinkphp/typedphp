@@ -116,14 +116,21 @@ class DocGenerator
         $responses = [];
 
         foreach ($apiClass::responses() as $code => $responseDefinition)  {
-            $responses[$code] = [
-                'description' => '',
-                'content' => [
-                    'application/json' => [
-                        'schema' => $this->parser->parse($responseDefinition),
-                    ]
-                ],
-            ];
+
+            if ($responseDefinition !== null) {
+                $responses[$code] = [
+                    'description' => '',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => $this->parser->parse($responseDefinition),
+                        ]
+                    ],
+                ];
+            } else {
+                $responses[$code] = [
+                    'description' => 'No Content',
+                ];
+            }
         }
 
         return $responses;

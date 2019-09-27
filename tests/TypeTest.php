@@ -7,6 +7,7 @@ use rethink\typedphp\InputValidator;
 use rethink\typedphp\TypeParser;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\ProductType;
+use rethink\typedphp\types\SumType;
 use rethink\typedphp\TypeValidator;
 use PHPUnit\Framework\TestCase;
 
@@ -65,6 +66,24 @@ class TypeTest extends TestCase
                         'type' => 'string',
                         'nullable' => true,
                     ],
+                ],
+            ],
+            
+            [
+                Enum001Type::class,
+                [
+                    'type' => 'string',
+                    'enum' => [
+                        'foo',
+                        'bar',
+                    ]
+                ],
+                [
+                    'type' => 'string',
+                    'enum' => [
+                        'foo',
+                        'bar',
+                    ]
                 ],
             ],
 
@@ -673,4 +692,16 @@ class Product004Type extends ProductType
 {
     public static $related1 = '!' . Product001Type::class;
     public static $related2 = Product002Type::class . '?';
+}
+
+
+class Enum001Type extends SumType 
+{
+    public static function composite()
+    {
+        return [
+            'foo',
+            'bar',
+        ];
+    }
 }

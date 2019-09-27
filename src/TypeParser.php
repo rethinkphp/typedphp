@@ -9,6 +9,7 @@ use rethink\typedphp\types\IntegerType;
 use rethink\typedphp\types\ProductType;
 use rethink\typedphp\types\NumberType;
 use rethink\typedphp\types\StringType;
+use rethink\typedphp\types\SumType;
 use rethink\typedphp\types\TimestampType;
 use rethink\typedphp\types\Type;
 use phpDocumentor\Reflection\DocBlockFactory;
@@ -150,7 +151,7 @@ class TypeParser
         $definitionName = $definition::name();
 
         if (($this->mode & self::MODE_REF_SCHEMA) && isset($this->schemas[$definition])) {
-            return $this->makeNullableObject([
+            return $this->makeNullableSchema([
                 '$ref' => '#/components/schemas/' . $definitionName,
             ], $nullable);
         }
@@ -181,15 +182,35 @@ class TypeParser
 
         if ($this->mode & self::MODE_REF_SCHEMA) {
             $this->schemas[$definitionName] = $schema;
-            return $this->makeNullableObject([
+            return $this->makeNullableSchema([
                 '$ref' => '#/components/schemas/' . $definitionName,
             ], $nullable);
         } else {
-            return $this->makeNullableObject($schema, $nullable);
+            return $this->makeNullableSchema($schema, $nullable);
+        }
+    }
+    
+    protected function parseEnum(string $definition)
+    {
+        $nullable = $definition[strlen($definition) - 1] === '?';
+
+        if ($nullable) {
+            $definition = trim($definition, '?');
+        }
+
+        $definitionName = $definition::name();
+        
+        if ($this->mode & self::MODE_REF_SCHEMA) {
+            $this->schemas[$definitionName] = $definition::toArray();
+            return $this->makeNullableSchema([
+                '$ref' => '#/components/schemas/' . $definitionName,
+            ], $nullable);
+        } else {
+            return $this->makeNullableSchema($definition::toArray(), $nullable);
         }
     }
 
-    protected function makeNullableObject(array $schema, $nullable)
+    protected function makeNullableSchema(array $schema, $nullable)
     {
         if ($this->mode & self::MODE_OPEN_API) {
             // OpenAPI specficition does not support this, just ingore the nullable setting.
@@ -234,6 +255,8 @@ class TypeParser
         $newDefinition = trim($definition, '?');
         if (is_subclass_of($newDefinition, ProductType::class)) {
             return $this->parseObject($definition);
+        } elseif (is_subclass_of($newDefinition, SumType::class)) {
+            return $this->parseEnum($definition);
         } else {
             return $this->parseScalar($definition);
         }

@@ -165,7 +165,8 @@ class TypeParser
             $comment = $reflection->getProperty($property)->getDocComment();
             if ($comment) {
                 $docblock = DocBlockFactory::createInstance()->create($comment);
-                $schema['title'] = trim($docblock->getSummary() . "\n\n" . $docblock->getDescription()->render());
+                $schema['title'] = trim($docblock->getSummary());
+                $schema['description'] = trim($docblock->getDescription()->render());
             }
             $properties[$property] = $schema;
 

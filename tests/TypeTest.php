@@ -476,7 +476,6 @@ class TypeTest extends TestCase
         $this->assertEquals($expect1, $parser->parse($type));
 
         $parser = new TypeParser(TypeParser::MODE_OPEN_API);
-        var_dump($parser->parse($type));
         $this->assertEquals($expect2 ?? $expect1, $parser->parse($type));
     }
 

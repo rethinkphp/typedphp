@@ -2,14 +2,13 @@
 
 namespace typedphp\tests;
 
-
+use PHPUnit\Framework\TestCase;
 use rethink\typedphp\InputValidator;
 use rethink\typedphp\TypeParser;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\ProductType;
 use rethink\typedphp\types\SumType;
 use rethink\typedphp\TypeValidator;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class TypeTest
@@ -51,7 +50,6 @@ class TypeTest extends TestCase
                 ],
             ],
 
-
             [
                 ['string?'],
                 [
@@ -68,7 +66,7 @@ class TypeTest extends TestCase
                     ],
                 ],
             ],
-            
+
             [
                 Enum001Type::class,
                 [
@@ -76,14 +74,14 @@ class TypeTest extends TestCase
                     'enum' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'string',
                     'enum' => [
                         'foo',
                         'bar',
-                    ]
+                    ],
                 ],
             ],
 
@@ -151,7 +149,64 @@ class TypeTest extends TestCase
                     'required' => [],
                 ],
             ],
-
+            [
+                Product005Type::class,
+                [
+                    'required' => ['related1'],
+                    'type' => 'object',
+                    'properties' => [
+                        'related1' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'required' => [],
+                                'properties' => [
+                                    'field1' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            'type' => 'string',
+                                        ],
+                                    ],
+                                    'field2' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            'type' => ['string', 'null'],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'required' => ['related1'],
+                    'type' => 'object',
+                    'properties' => [
+                        'related1' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'required' => [],
+                                'properties' => [
+                                    'field1' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            'type' => 'string',
+                                        ],
+                                    ],
+                                    'field2' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            'type' => 'string',
+                                            'nullable' => true,
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             [
                 Product003Type::class,
                 [
@@ -198,7 +253,7 @@ class TypeTest extends TestCase
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
-                                'nullable_field' => [ 'type' => 'string', 'nullable' => true],
+                                'nullable_field' => ['type' => 'string', 'nullable' => true],
                             ],
                             'required' => ['id'],
 
@@ -246,7 +301,7 @@ class TypeTest extends TestCase
                         'related2' => [
                             'anyOf' => [
                                 [
-                                    'type' => 'null'
+                                    'type' => 'null',
                                 ],
                                 [
                                     'type' => 'object',
@@ -265,8 +320,8 @@ class TypeTest extends TestCase
                                         ],
                                     ],
                                     'required' => [],
-                                ]
-                            ]
+                                ],
+                            ],
                         ],
                     ],
                     'required' => ['related1'],
@@ -280,7 +335,7 @@ class TypeTest extends TestCase
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
-                                'nullable_field' => [ 'type' => 'string', 'nullable' => true],
+                                'nullable_field' => ['type' => 'string', 'nullable' => true],
                             ],
                             'required' => ['id'],
 
@@ -308,9 +363,10 @@ class TypeTest extends TestCase
                     'required' => ['related1'],
                 ],
             ],
-            
+
             [
-                new class extends InputType {
+                new class extends InputType
+                {
                     public static $limit = 'query:!number';
                     public static $offset = 'query:number?';
                     public static $default_in = 'number';
@@ -333,7 +389,7 @@ class TypeTest extends TestCase
                         'in' => 'query',
                         'required' => false,
                         'schema' => ['type' => 'number'],
-                    ]
+                    ],
                 ],
 
                 [
@@ -354,7 +410,7 @@ class TypeTest extends TestCase
                         'in' => 'query',
                         'required' => false,
                         'schema' => ['type' => 'number'],
-                    ]
+                    ],
                 ],
             ],
 
@@ -375,7 +431,7 @@ class TypeTest extends TestCase
                                 'type' => 'boolean',
                             ],
                             'nullable_field' => [
-                                'type' => ['string', 'null']
+                                'type' => ['string', 'null'],
                             ],
                         ],
                         'required' => ['id'],
@@ -403,7 +459,7 @@ class TypeTest extends TestCase
                         'required' => ['id'],
                     ],
                 ],
-            ]
+            ],
 
         ];
     }
@@ -422,7 +478,6 @@ class TypeTest extends TestCase
         $parser = new TypeParser(TypeParser::MODE_OPEN_API);
         $this->assertEquals($expect2 ?? $expect1, $parser->parse($type));
     }
-
 
     public function typeToArrayWithRefCases()
     {
@@ -484,10 +539,10 @@ class TypeTest extends TestCase
                         'schema' => [
                             'type' => 'number',
                         ],
-                    ]
+                    ],
                 ],
                 ['The required query parameter: \'not_exist\' is required'],
-                []
+                [],
             ],
 
             // missing optional input field
@@ -502,12 +557,11 @@ class TypeTest extends TestCase
                         'schema' => [
                             'type' => 'number',
                         ],
-                    ]
+                    ],
                 ],
                 [],
-                []
+                [],
             ],
-
 
             // the required field is present
             [
@@ -522,12 +576,11 @@ class TypeTest extends TestCase
                         'schema' => [
                             'type' => 'number',
                         ],
-                    ]
+                    ],
                 ],
                 [],
-                ['query' => ['foo' => 1]]
+                ['query' => ['foo' => 1]],
             ],
-
 
             // type casting succeed
             [
@@ -542,10 +595,10 @@ class TypeTest extends TestCase
                         'schema' => [
                             'type' => 'number',
                         ],
-                    ]
+                    ],
                 ],
                 [],
-                ['query' => ['foo' => 1]]
+                ['query' => ['foo' => 1]],
             ],
 
             // type casting failed
@@ -561,10 +614,10 @@ class TypeTest extends TestCase
                         'schema' => [
                             'type' => 'number',
                         ],
-                    ]
+                    ],
                 ],
                 ['The type of query parameter "foo" is invalid, string value found, but a number is required'],
-                []
+                [],
             ],
         ];
     }
@@ -599,14 +652,14 @@ class TypeTest extends TestCase
                     'type' => 'array',
                     'items' => [
                         'type' => 'integer',
-                    ]
+                    ],
                 ],
                 ['The data of "[0]" is invalid, string value found, but an integer is required'],
             ],
 
             [
                 [
-                    'foo' => ['1']
+                    'foo' => ['1'],
                 ],
                 [
                     'type' => 'object',
@@ -615,13 +668,13 @@ class TypeTest extends TestCase
                             'type' => 'array',
                             'items' => [
                                 'type' => 'integer',
-                            ]
+                            ],
                         ],
-                    ]
+                    ],
                 ],
                 ['The data of "foo[0]" is invalid, string value found, but an integer is required'],
             ],
-            
+
             # validate nullable object type
             [
                 [
@@ -635,10 +688,10 @@ class TypeTest extends TestCase
                                 ['type' => 'null'],
                             ],
                         ],
-                    ]
+                    ],
                 ],
                 [],
-            ]
+            ],
         ];
     }
 
@@ -665,7 +718,6 @@ class Product001Type extends ProductType
     public static $is_admin = 'boolean';
     public static $nullable_field = 'string?';
 }
-
 
 /**
  * A product type with array.
@@ -694,8 +746,15 @@ class Product004Type extends ProductType
     public static $related2 = Product002Type::class . '?';
 }
 
+/**
+ * A product type with custom array type field.
+ */
+class Product005Type extends ProductType
+{
+    public static $related1 = '![' . Product002Type::class . ']';
+}
 
-class Enum001Type extends SumType 
+class Enum001Type extends SumType
 {
     public static function composite()
     {

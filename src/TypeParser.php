@@ -68,6 +68,11 @@ class TypeParser
         }
 
         $required = $definition[0] === '!';
+        
+        $matches = [];
+        if (is_string($definition) && preg_match('/\[(.*?)\]/', $definition, $matches)) {
+            return [$required, $this->parseArrayField([$matches[1]])];
+        }
 
         if ($required) {
             $definition = substr($definition, 1);

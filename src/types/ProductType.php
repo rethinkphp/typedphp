@@ -11,6 +11,11 @@ use rethink\typedphp\TypeParser;
  */
 abstract class ProductType implements Type
 {
+    public static function contentType()
+    {
+        return 'application/json';
+    }
+
     public static function name()
     {
         $parts = explode('\\', static::class);

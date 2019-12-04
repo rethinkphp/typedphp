@@ -100,10 +100,15 @@ class DocGenerator
             $description = trim($docblock->getSummary() . "\n\n" . $docblock->getDescription()->render());
         }
 
+        $contentType = 'application/json';
+        if (is_string($bodyDefinition) || is_object($bodyDefinition)) {
+            $contentType = $bodyDefinition::contentType();
+        }
+
         return [
             'description' => $description,
             'content' => [
-                'application/json' => [
+                $contentType => [
                     'schema' => $this->parser->parse($bodyDefinition),
                 ],
             ],

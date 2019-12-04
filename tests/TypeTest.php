@@ -7,7 +7,6 @@ use rethink\typedphp\InputValidator;
 use rethink\typedphp\TypeParser;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\ProductType;
-use rethink\typedphp\types\FileProductType;
 use rethink\typedphp\types\SumType;
 use rethink\typedphp\TypeValidator;
 

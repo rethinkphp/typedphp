@@ -93,9 +93,10 @@ class TypeTest extends TestCase
                         'id' => ['type' => 'integer'],
                         'name' => ['type' => 'string'],
                         'is_admin' => ['type' => 'boolean'],
+                        'file' => ['type' => 'string', 'format' => 'binary',],
                         'nullable_field' => ['type' => ['string', 'null']],
                     ],
-                    'required' => ['id'],
+                    'required' => ['id', 'file'],
                 ],
                 [
                     'type' => 'object',
@@ -103,9 +104,10 @@ class TypeTest extends TestCase
                         'id' => ['type' => 'integer'],
                         'name' => ['type' => 'string'],
                         'is_admin' => ['type' => 'boolean'],
+                        'file' => ['type' => 'string', 'format' => 'binary',],
                         'nullable_field' => ['type' => 'string', 'nullable' => true],
                     ],
-                    'required' => ['id'],
+                    'required' => ['id', 'file'],
                 ],
             ],
 
@@ -218,9 +220,10 @@ class TypeTest extends TestCase
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
+                                'file' => ['type' => 'string', 'format' => 'binary',],
                                 'nullable_field' => ['type' => ['string', 'null']],
                             ],
-                            'required' => ['id'],
+                            'required' => ['id', 'file'],
 
                         ],
                         'related2' => [
@@ -253,9 +256,10 @@ class TypeTest extends TestCase
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
+                                'file' => ['type' => 'string', 'format' => 'binary',],
                                 'nullable_field' => ['type' => 'string', 'nullable' => true],
                             ],
-                            'required' => ['id'],
+                            'required' => ['id', 'file'],
 
                         ],
                         'related2' => [
@@ -293,9 +297,10 @@ class TypeTest extends TestCase
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
+                                'file' => ['type' => 'string', 'format' => 'binary',],
                                 'nullable_field' => ['type' => ['string', 'null']],
                             ],
-                            'required' => ['id'],
+                            'required' => ['id', 'file'],
 
                         ],
                         'related2' => [
@@ -335,9 +340,10 @@ class TypeTest extends TestCase
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
+                                'file' => ['type' => 'string', 'format' => 'binary'],
                                 'nullable_field' => ['type' => 'string', 'nullable' => true],
                             ],
-                            'required' => ['id'],
+                            'required' => ['id', 'file'],
 
                         ],
                         'related2' => [
@@ -430,11 +436,15 @@ class TypeTest extends TestCase
                             'is_admin' => [
                                 'type' => 'boolean',
                             ],
+                            'file' => [
+                                'type' => 'string',
+                                'format' => 'binary',
+                            ],
                             'nullable_field' => [
                                 'type' => ['string', 'null'],
                             ],
                         ],
-                        'required' => ['id'],
+                        'required' => ['id', 'file'],
                     ],
                 ],
                 [
@@ -451,16 +461,19 @@ class TypeTest extends TestCase
                             'is_admin' => [
                                 'type' => 'boolean',
                             ],
+                            'file' => [
+                                'type' => 'string',
+                                'format' => 'binary',
+                            ],
                             'nullable_field' => [
                                 'type' => 'string',
                                 'nullable' => true,
                             ],
                         ],
-                        'required' => ['id'],
+                        'required' => ['id', 'file'],
                     ],
                 ],
             ],
-
         ];
     }
 
@@ -716,6 +729,7 @@ class Product001Type extends ProductType
     public static $id = '!integer';
     public static $name = 'string';
     public static $is_admin = 'boolean';
+    public static $file = '!binary';
     public static $nullable_field = 'string?';
 }
 

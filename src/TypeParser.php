@@ -3,6 +3,7 @@
 namespace rethink\typedphp;
 
 use rethink\typedphp\types\BooleanType;
+use rethink\typedphp\types\BinaryType;
 use rethink\typedphp\types\DictType;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\IntegerType;
@@ -40,6 +41,7 @@ class TypeParser
         $this->registerBuiltinType(BooleanType::class);
         $this->registerBuiltinType(DictType::class);
 
+        $this->registerBuiltinType(BinaryType::class);
         $this->registerBuiltinType(TimestampType::class);
     }
 
@@ -68,7 +70,7 @@ class TypeParser
         }
 
         $required = $definition[0] === '!';
-        
+
         $matches = [];
         if (is_string($definition) && preg_match('/\[(.*?)\]/', $definition, $matches)) {
             return [$required, $this->parseArrayField([$matches[1]])];
@@ -195,7 +197,7 @@ class TypeParser
             return $this->makeNullableSchema($schema, $nullable);
         }
     }
-    
+
     protected function parseEnum(string $definition)
     {
         $nullable = $definition[strlen($definition) - 1] === '?';
@@ -205,7 +207,7 @@ class TypeParser
         }
 
         $definitionName = $definition::name();
-        
+
         if ($this->mode & self::MODE_REF_SCHEMA) {
             $this->schemas[$definitionName] = $definition::toArray();
             return $this->makeNullableSchema([

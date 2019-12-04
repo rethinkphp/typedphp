@@ -100,15 +100,30 @@ class DocGenerator
             $description = trim($docblock->getSummary() . "\n\n" . $docblock->getDescription()->render());
         }
 
+        $contentType = $this->parseContentType($class) ?? 'application/json';
+
         return [
             'description' => $description,
             'content' => [
-                'application/json' => [
+                $contentType => [
                     'schema' => $this->parser->parse($bodyDefinition),
                 ],
             ],
             'required' => true,
         ];
+    }
+
+    private function parseContentType(\ReflectionClass $class)
+    {
+        $comment = $class->getDocComment();
+        if ($comment) {
+            $docblock = DocBlockFactory::createInstance()->create($comment);
+            $tags = $docblock->getTagsByName('content-type');
+            if (count($tags)) {
+                return trim((string) $tags[0]->getDescription());
+            }
+        }
+        return null;
     }
 
     protected function buildResponses($apiClass, \ReflectionClass $class)

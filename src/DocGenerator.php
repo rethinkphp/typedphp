@@ -100,10 +100,7 @@ class DocGenerator
             $description = trim($docblock->getSummary() . "\n\n" . $docblock->getDescription()->render());
         }
 
-        $contentType = 'application/json';
-        if (is_string($bodyDefinition) || is_object($bodyDefinition)) {
-            $contentType = $bodyDefinition::contentType();
-        }
+        $contentType = $this->parseContentType($class) ?? 'application/json';
 
         return [
             'description' => $description,
@@ -114,6 +111,19 @@ class DocGenerator
             ],
             'required' => true,
         ];
+    }
+
+    private function parseContentType(\ReflectionClass $class)
+    {
+        $comment = $class->getDocComment();
+        if ($comment) {
+            $docblock = DocBlockFactory::createInstance()->create($comment);
+            $tags = $docblock->getTagsByName('content-type');
+            if (count($tags)) {
+                return trim((string) $tags[0]->getDescription());
+            }
+        }
+        return null;
     }
 
     protected function buildResponses($apiClass, \ReflectionClass $class)

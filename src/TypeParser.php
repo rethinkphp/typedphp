@@ -4,6 +4,7 @@ namespace rethink\typedphp;
 
 use rethink\typedphp\types\BooleanType;
 use rethink\typedphp\types\BinaryType;
+use rethink\typedphp\types\DateType;
 use rethink\typedphp\types\DictType;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\IntegerType;
@@ -43,6 +44,7 @@ class TypeParser
 
         $this->registerBuiltinType(BinaryType::class);
         $this->registerBuiltinType(TimestampType::class);
+        $this->registerBuiltinType(DateType::class);
     }
 
     public function registerBuiltinType(string $typeClass)

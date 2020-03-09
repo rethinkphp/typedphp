@@ -100,6 +100,10 @@ class TypeTest extends TestCase
                             'format' => 'date',
                             'pattern' => '^\d{4}-\d{2}-\d{2}$'
                         ],
+                        'time' => [
+                            'type' => 'string',
+                            'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                        ],
                     ],
                     'required' => ['id', 'file'],
                 ],
@@ -116,6 +120,10 @@ class TypeTest extends TestCase
                             'format' => 'date',
                             'nullable' => true,
                             'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                        ],
+                        'time' => [
+                            'type' => 'string',
+                            'pattern' => '^\d{2}:\d{2}:\d{2}$'
                         ],
                     ],
                     'required' => ['id', 'file'],
@@ -238,6 +246,10 @@ class TypeTest extends TestCase
                                     'format' => 'date',
                                     'pattern' => '^\d{4}-\d{2}-\d{2}$'
                                 ],
+                                'time' => [
+                                    'type' => 'string',
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                ],
                             ],
                             'required' => ['id', 'file'],
 
@@ -279,6 +291,10 @@ class TypeTest extends TestCase
                                     'format' => 'date',
                                     'nullable' => true,
                                     'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                                ],
+                                'time' => [
+                                    'type' => 'string',
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -325,6 +341,10 @@ class TypeTest extends TestCase
                                     'type' => ['string', 'null'],
                                     'format' => 'date',
                                     'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                                ],
+                                'time' => [
+                                    'type' => 'string',
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -374,6 +394,10 @@ class TypeTest extends TestCase
                                     'format' => 'date',
                                     'nullable' => true,
                                     'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                                ],
+                                'time' => [
+                                    'type' => 'string',
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -481,6 +505,10 @@ class TypeTest extends TestCase
                                 'format' => 'date',
                                 'pattern' => '^\d{4}-\d{2}-\d{2}$'
                             ],
+                            'time' => [
+                                'type' => 'string',
+                                'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                            ],
                         ],
                         'required' => ['id', 'file'],
                     ],
@@ -512,6 +540,10 @@ class TypeTest extends TestCase
                                 'format' => 'date',
                                 'nullable' => true,
                                 'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                            ],
+                            'time' => [
+                                'type' => 'string',
+                                'pattern' => '^\d{2}:\d{2}:\d{2}$'
                             ],
                         ],
                         'required' => ['id', 'file'],
@@ -776,6 +808,7 @@ class Product001Type extends ProductType
     public static $file = '!binary';
     public static $nullable_field = 'string?';
     public static $date = 'date?';
+    public static $time = 'time';
 }
 
 /**

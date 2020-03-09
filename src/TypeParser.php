@@ -13,6 +13,7 @@ use rethink\typedphp\types\NumberType;
 use rethink\typedphp\types\StringType;
 use rethink\typedphp\types\SumType;
 use rethink\typedphp\types\TimestampType;
+use rethink\typedphp\types\TimeType;
 use rethink\typedphp\types\Type;
 use phpDocumentor\Reflection\DocBlockFactory;
 
@@ -45,6 +46,7 @@ class TypeParser
         $this->registerBuiltinType(BinaryType::class);
         $this->registerBuiltinType(TimestampType::class);
         $this->registerBuiltinType(DateType::class);
+        $this->registerBuiltinType(TimeType::class);
     }
 
     public function registerBuiltinType(string $typeClass)

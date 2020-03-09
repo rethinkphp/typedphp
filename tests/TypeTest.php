@@ -102,7 +102,7 @@ class TypeTest extends TestCase
                         ],
                         'time' => [
                             'type' => 'string',
-                            'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                            'pattern' => '^\d{2}:\d{2}:\d{2}$'
                         ],
                     ],
                     'required' => ['id', 'file'],
@@ -123,7 +123,7 @@ class TypeTest extends TestCase
                         ],
                         'time' => [
                             'type' => 'string',
-                            'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                            'pattern' => '^\d{2}:\d{2}:\d{2}$'
                         ],
                     ],
                     'required' => ['id', 'file'],
@@ -248,7 +248,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -294,7 +294,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -344,7 +344,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -397,7 +397,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -507,7 +507,7 @@ class TypeTest extends TestCase
                             ],
                             'time' => [
                                 'type' => 'string',
-                                'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                                'pattern' => '^\d{2}:\d{2}:\d{2}$'
                             ],
                         ],
                         'required' => ['id', 'file'],
@@ -543,7 +543,7 @@ class TypeTest extends TestCase
                             ],
                             'time' => [
                                 'type' => 'string',
-                                'pattern' => '^\d{2}-\d{2}-\d{2}$'
+                                'pattern' => '^\d{2}:\d{2}:\d{2}$'
                             ],
                         ],
                         'required' => ['id', 'file'],

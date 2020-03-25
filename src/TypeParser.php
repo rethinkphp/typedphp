@@ -93,7 +93,6 @@ class TypeParser
         $schema= [
             'type' => 'array',
             'items' => $this->parseString($definition[0]),
-            'nullable' => $nullable,
         ];
         return $this->makeNullableSchema($schema, $nullable);
     }

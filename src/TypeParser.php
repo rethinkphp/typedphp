@@ -90,7 +90,7 @@ class TypeParser
 
     protected function parseArrayField($definition, $nullable = false)
     {
-        $schema= [
+        $schema = [
             'type' => 'array',
             'items' => $this->parseString($definition[0]),
         ];

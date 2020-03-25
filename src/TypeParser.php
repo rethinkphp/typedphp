@@ -74,10 +74,11 @@ class TypeParser
         }
 
         $required = $definition[0] === '!';
+        $nullable = $this->isNullable($definition);
 
         $matches = [];
-        if (is_string($definition) && preg_match('/\[(.*?)\]/', $definition, $matches)) {
-            return [$required, $this->parseArrayField([$matches[1]])];
+        if (preg_match('/\[(.*?)\]/', $definition, $matches)) {
+            return [$required, $this->parseArrayField([$matches[1]], $nullable)];
         }
 
         if ($required) {
@@ -87,12 +88,13 @@ class TypeParser
         return [$required, $this->parseString($definition)];
     }
 
-    protected function parseArrayField($definition)
+    protected function parseArrayField($definition, $nullable = false)
     {
-        return [
+        $schema = [
             'type' => 'array',
             'items' => $this->parseString($definition[0]),
         ];
+        return $this->makeNullableSchema($schema, $nullable);
     }
 
     protected function parseArray($definition)
@@ -147,14 +149,18 @@ class TypeParser
         ];
     }
 
+    private function isNullable(string $definition): bool
+    {
+        return $definition[strlen($definition) - 1] === '?';
+    }
+
     protected function parseObject($definition)
     {
         if (is_subclass_of($definition, InputType::class)) {
             return $this->parseInputType($definition);
         }
 
-        $nullable = $definition[strlen($definition) - 1] === '?';
-
+        $nullable = $this->isNullable($definition);
         if ($nullable) {
             $definition = trim($definition, '?');
         }
@@ -204,8 +210,7 @@ class TypeParser
 
     protected function parseEnum(string $definition)
     {
-        $nullable = $definition[strlen($definition) - 1] === '?';
-
+        $nullable = $this->isNullable($definition);
         if ($nullable) {
             $definition = trim($definition, '?');
         }
@@ -243,7 +248,7 @@ class TypeParser
 
     protected function parseScalar($definition)
     {
-        $nullable = $definition[strlen($definition) - 1] === '?';
+        $nullable = $this->isNullable($definition);
 
         if ($nullable) {
             $definition = trim($definition, '?');

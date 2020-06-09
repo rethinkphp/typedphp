@@ -9,11 +9,17 @@ namespace rethink\typedphp;
  */
 interface ApiInterface
 {
+    /**
+     * @return mixed
+     */
     public static function parameters();
 
+    /**
+     * @return mixed
+     */
     public static function requestBody();
 
-    public static function responses();
+    public static function responses(): array;
 
-    public static function permissions();
+    public static function permissions(): array;
 }

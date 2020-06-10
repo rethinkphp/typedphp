@@ -2,20 +2,22 @@
 
 namespace rethink\typedphp;
 
-use rethink\typedphp\types\BooleanType;
+use InvalidArgumentException;
+use phpDocumentor\Reflection\DocBlockFactory;
 use rethink\typedphp\types\BinaryType;
+use rethink\typedphp\types\BooleanType;
 use rethink\typedphp\types\DateType;
 use rethink\typedphp\types\DictType;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\IntegerType;
-use rethink\typedphp\types\ProductType;
+use rethink\typedphp\types\MapType;
 use rethink\typedphp\types\NumberType;
+use rethink\typedphp\types\ProductType;
 use rethink\typedphp\types\StringType;
 use rethink\typedphp\types\SumType;
 use rethink\typedphp\types\TimestampType;
 use rethink\typedphp\types\TimeType;
 use rethink\typedphp\types\Type;
-use phpDocumentor\Reflection\DocBlockFactory;
 
 /**
  * Class TypeParser
@@ -25,8 +27,8 @@ use phpDocumentor\Reflection\DocBlockFactory;
 class TypeParser
 {
     const MODE_JSON_SCHEMA = 1;
-    const MODE_OPEN_API    = 2;
-    const MODE_REF_SCHEMA  = 4;
+    const MODE_OPEN_API = 2;
+    const MODE_REF_SCHEMA = 4;
 
     protected $mode = 0;
     protected $builtinTypes = [];
@@ -51,8 +53,8 @@ class TypeParser
 
     public function registerBuiltinType(string $typeClass)
     {
-        if (!is_subclass_of($typeClass, Type::class)) {
-            throw new \InvalidArgumentException("The type: $typeClass is invalid, a type should be subclass of Type");
+        if (! is_subclass_of($typeClass, Type::class)) {
+            throw new InvalidArgumentException("The type: $typeClass is invalid, a type should be subclass of Type");
         }
 
         $this->builtinTypes[$typeClass::name()] = $typeClass;
@@ -60,8 +62,8 @@ class TypeParser
 
     protected function getValidTypeClass($typeName)
     {
-        if (!isset($this->builtinTypes[$typeName])) {
-            throw new \InvalidArgumentException("The type: $typeName is invalid, not such type existed");
+        if (! isset($this->builtinTypes[$typeName])) {
+            throw new InvalidArgumentException("The type: $typeName is invalid, not such type existed");
         }
 
         return $this->builtinTypes[$typeName];
@@ -197,6 +199,9 @@ class TypeParser
             'properties' => $properties,
             'required' => $requiredFields,
         ];
+        if (empty($schema['required'])) {
+            unset($schema['required']);
+        }
 
         if ($this->mode & self::MODE_REF_SCHEMA) {
             $this->schemas[$definitionName] = $schema;
@@ -242,7 +247,7 @@ class TypeParser
             'anyOf' => [
                 ['type' => 'null'],
                 $schema,
-            ]
+            ],
         ];
     }
 
@@ -255,16 +260,52 @@ class TypeParser
         }
 
         $typeClass = $this->getValidTypeClass($definition);
-
         $schema = $typeClass::toArray();
 
         if (($this->mode & self::MODE_JSON_SCHEMA) && $nullable) {
             $schema['type'] = [$schema['type'], 'null'];
-        } else if (($this->mode & self::MODE_OPEN_API) && $nullable) {
+        } elseif (($this->mode & self::MODE_OPEN_API) && $nullable) {
             $schema['nullable'] = $nullable;
         }
 
         return $schema;
+    }
+
+    protected function parseMap(string $definition): array
+    {
+        $nullable = false;
+        if ($this->isNullable($definition)) {
+            $nullable = true;
+            $definition = trim($definition, '?');
+        }
+
+        assert(is_subclass_of($definition, MapType::class));
+
+        $schema = $definition::toArray();
+
+        $valueDefinition = $definition::valueType();
+        if ($valueDefinition) {
+            $schema['additionalProperties'] = $this->parseString($valueDefinition);
+        }
+
+        $example = $definition::example();
+        if ($example) {
+            $schema['example'] = $example;
+        }
+
+        if (empty($schema['required'])) {
+            unset($schema['required']);
+        }
+
+        $definitionName = $definition::name();
+        if ($this->mode & self::MODE_REF_SCHEMA) {
+            $this->schemas[$definitionName] = $schema;
+            return $this->makeNullableSchema([
+                '$ref' => '#/components/schemas/' . $definitionName,
+            ], $nullable);
+        }
+
+        return $this->makeNullableSchema($schema, $nullable);
     }
 
     protected function parseString($definition)
@@ -274,6 +315,8 @@ class TypeParser
             return $this->parseObject($definition);
         } elseif (is_subclass_of($newDefinition, SumType::class)) {
             return $this->parseEnum($definition);
+        } elseif (is_subclass_of($newDefinition, MapType::class)) {
+            return $this->parseMap($newDefinition);
         } else {
             return $this->parseScalar($definition);
         }
@@ -290,9 +333,9 @@ class TypeParser
     {
         if (is_array($definition)) {
             return $this->parseArray($definition);
-        } else if (is_string($definition)) {
+        } elseif (is_string($definition)) {
             return $this->parseString($definition);
-        } else if (is_object($definition) && $definition instanceof ProductType) {
+        } elseif (is_object($definition) && $definition instanceof ProductType) {
             return $this->parseObject(get_class($definition));
         } else {
             throw new \InvalidArgumentException('The definition is invalid');

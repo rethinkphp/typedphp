@@ -144,11 +144,13 @@ class TypeParser
 
         list($_, $schema) = $this->parseField($definition);
 
-        return [
+        $result = [
             'in' => $fetcher,
-            'required' => $required,
             'schema' => $schema,
         ];
+        if ($required) {
+            $result['required'] = $required;
+        }
     }
 
     private function isNullable(string $definition): bool
@@ -197,10 +199,9 @@ class TypeParser
         $schema = [
             'type' => 'object',
             'properties' => $properties,
-            'required' => $requiredFields,
         ];
-        if (empty($schema['required'])) {
-            unset($schema['required']);
+        if ($requiredFields) {
+            $schema['required'] = $requiredFields;
         }
 
         if ($this->mode & self::MODE_REF_SCHEMA) {
@@ -291,10 +292,6 @@ class TypeParser
         $example = $definition::example();
         if ($example) {
             $schema['example'] = $example;
-        }
-
-        if (empty($schema['required'])) {
-            unset($schema['required']);
         }
 
         $definitionName = $definition::name();

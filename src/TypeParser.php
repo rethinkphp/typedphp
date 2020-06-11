@@ -151,6 +151,7 @@ class TypeParser
         if ($required) {
             $result['required'] = $required;
         }
+        return $result;
     }
 
     private function isNullable(string $definition): bool

@@ -5,7 +5,9 @@ namespace typedphp\tests;
 use PHPUnit\Framework\TestCase;
 use rethink\typedphp\InputValidator;
 use rethink\typedphp\TypeParser;
+use rethink\typedphp\types\DictType;
 use rethink\typedphp\types\InputType;
+use rethink\typedphp\types\MapType;
 use rethink\typedphp\types\ProductType;
 use rethink\typedphp\types\SumType;
 use rethink\typedphp\TypeValidator;
@@ -21,13 +23,46 @@ class TypeTest extends TestCase
     {
         return [
             [
+                Map001Type::class,
+                [
+                    'type' => 'object',
+                    'example' => ['id' => 1, 'name' => 'INFO'],
+                ],
+                null,
+            ],
+            [
+                Map002Type::class,
+                [
+                    'type' => 'object',
+                    'additionalProperties' => [
+                        'type' => 'integer',
+                    ],
+                    'example' => ['优' => 90, '良' => 80, '中' => 60],
+                ],
+                null,
+            ],
+            [
+                Map003Type::class,
+                [
+                    'type' => 'object',
+                    'additionalProperties' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'name' => [
+                                'type' => 'string',
+                            ],
+                        ],
+                    ],
+                ],
+                null,
+            ],
+            [
                 'string',
                 [
                     'type' => 'string',
                 ],
                 null,
             ],
-
             [
                 ['string'],
                 [
@@ -98,11 +133,11 @@ class TypeTest extends TestCase
                         'date' => [
                             'type' => ['string', 'null'],
                             'format' => 'date',
-                            'pattern' => '^\d{4}-\d{2}-\d{2}$'
+                            'pattern' => '^\d{4}-\d{2}-\d{2}$',
                         ],
                         'time' => [
                             'type' => 'string',
-                            'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                            'pattern' => '^\d{2}:\d{2}:\d{2}$',
                         ],
                     ],
                     'required' => ['id', 'file'],
@@ -123,7 +158,7 @@ class TypeTest extends TestCase
                         ],
                         'time' => [
                             'type' => 'string',
-                            'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                            'pattern' => '^\d{2}:\d{2}:\d{2}$',
                         ],
                     ],
                     'required' => ['id', 'file'],
@@ -148,7 +183,6 @@ class TypeTest extends TestCase
                             ],
                         ],
                     ],
-                    'required' => [],
                 ],
                 [
                     'type' => 'object',
@@ -167,7 +201,6 @@ class TypeTest extends TestCase
                             ],
                         ],
                     ],
-                    'required' => [],
                 ],
             ],
             [
@@ -180,7 +213,6 @@ class TypeTest extends TestCase
                             'type' => 'array',
                             'items' => [
                                 'type' => 'object',
-                                'required' => [],
                                 'properties' => [
                                     'field1' => [
                                         'type' => 'array',
@@ -207,7 +239,6 @@ class TypeTest extends TestCase
                             'type' => 'array',
                             'items' => [
                                 'type' => 'object',
-                                'required' => [],
                                 'properties' => [
                                     'field1' => [
                                         'type' => 'array',
@@ -244,11 +275,11 @@ class TypeTest extends TestCase
                                 'date' => [
                                     'type' => ['string', 'null'],
                                     'format' => 'date',
-                                    'pattern' => '^\d{4}-\d{2}-\d{2}$'
+                                    'pattern' => '^\d{4}-\d{2}-\d{2}$',
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -270,10 +301,8 @@ class TypeTest extends TestCase
                                     ],
                                 ],
                             ],
-                            'required' => [],
                         ],
                     ],
-                    'required' => [],
                 ],
                 [
                     'type' => 'object',
@@ -294,7 +323,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -317,10 +346,8 @@ class TypeTest extends TestCase
                                     ],
                                 ],
                             ],
-                            'required' => [],
                         ],
                     ],
-                    'required' => [],
                 ],
             ],
 
@@ -344,7 +371,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -371,7 +398,6 @@ class TypeTest extends TestCase
                                             ],
                                         ],
                                     ],
-                                    'required' => [],
                                 ],
                             ],
                         ],
@@ -397,7 +423,7 @@ class TypeTest extends TestCase
                                 ],
                                 'time' => [
                                     'type' => 'string',
-                                    'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
                                 ],
                             ],
                             'required' => ['id', 'file'],
@@ -420,7 +446,6 @@ class TypeTest extends TestCase
                                     ],
                                 ],
                             ],
-                            'required' => [],
                         ],
                     ],
                     'required' => ['related1'],
@@ -428,8 +453,7 @@ class TypeTest extends TestCase
             ],
 
             [
-                new class extends InputType
-                {
+                new class extends InputType {
                     public static $limit = 'query:!number';
                     public static $offset = 'query:number?';
                     public static $default_in = 'number';
@@ -503,11 +527,11 @@ class TypeTest extends TestCase
                             'date' => [
                                 'type' => ['string', 'null'],
                                 'format' => 'date',
-                                'pattern' => '^\d{4}-\d{2}-\d{2}$'
+                                'pattern' => '^\d{4}-\d{2}-\d{2}$',
                             ],
                             'time' => [
                                 'type' => 'string',
-                                'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                'pattern' => '^\d{2}:\d{2}:\d{2}$',
                             ],
                         ],
                         'required' => ['id', 'file'],
@@ -543,7 +567,7 @@ class TypeTest extends TestCase
                             ],
                             'time' => [
                                 'type' => 'string',
-                                'pattern' => '^\d{2}:\d{2}:\d{2}$'
+                                'pattern' => '^\d{2}:\d{2}:\d{2}$',
                             ],
                         ],
                         'required' => ['id', 'file'],
@@ -562,6 +586,7 @@ class TypeTest extends TestCase
     public function testTypeToArray($type, $expect1, $expect2)
     {
         $parser = new TypeParser(TypeParser::MODE_JSON_SCHEMA);
+        var_dump($parser->parse($type));
         $this->assertEquals($expect1, $parser->parse($type));
 
         $parser = new TypeParser(TypeParser::MODE_OPEN_API);
@@ -594,7 +619,6 @@ class TypeTest extends TestCase
                                 ],
                             ],
                         ],
-                        'required' => [],
                     ],
                 ],
             ],
@@ -855,4 +879,53 @@ class Enum001Type extends SumType
             'bar',
         ];
     }
+}
+
+class Map001Type extends MapType
+{
+    public static function valueType(): string
+    {
+        return '';
+    }
+
+    public static function example(): array
+    {
+        return [
+            'id' => 1,
+            'name' => 'INFO',
+        ];
+    }
+}
+
+class Map002Type extends MapType
+{
+    public static function valueType(): string
+    {
+        return 'integer';
+    }
+
+    public static function example(): array
+    {
+        return ['优' => 90, '良' => 80, '中' => 60];
+    }
+}
+
+class Dict003ItemType extends ProductType
+{
+    public static $name = 'string';
+}
+
+class Map003Type extends MapType
+{
+
+    public static function valueType(): string
+    {
+        return Dict003ItemType::class;
+    }
+
+    public static function example(): array
+    {
+        return [];
+    }
+
 }

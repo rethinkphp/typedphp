@@ -148,9 +148,7 @@ class TypeParser
             'in' => $fetcher,
             'schema' => $schema,
         ];
-        if ($required) {
-            $result['required'] = $required;
-        }
+        $result['required'] = $required;
         return $result;
     }
 
@@ -236,17 +234,12 @@ class TypeParser
 
     protected function makeNullableSchema(array $schema, $nullable)
     {
-        if ($this->mode & self::MODE_OPEN_API) {
-            // OpenAPI specficition does not support this, just ingore the nullable setting.
-            return $schema;
-        }
-
         if (! $nullable) {
             return $schema;
         }
 
         return [
-            'anyOf' => [
+            'oneOf' => [
                 ['type' => 'null'],
                 $schema,
             ],
@@ -264,10 +257,8 @@ class TypeParser
         $typeClass = $this->getValidTypeClass($definition);
         $schema = $typeClass::toArray();
 
-        if (($this->mode & self::MODE_JSON_SCHEMA) && $nullable) {
+        if ($nullable) {
             $schema['type'] = [$schema['type'], 'null'];
-        } elseif (($this->mode & self::MODE_OPEN_API) && $nullable) {
-            $schema['nullable'] = $nullable;
         }
 
         return $schema;

@@ -28,7 +28,6 @@ class TypeTest extends TestCase
                     'type' => 'object',
                     'example' => ['id' => 1, 'name' => 'INFO'],
                 ],
-                null,
             ],
             [
                 Map002Type::class,
@@ -39,7 +38,6 @@ class TypeTest extends TestCase
                     ],
                     'example' => ['优' => 90, '良' => 80, '中' => 60],
                 ],
-                null,
             ],
             [
                 Map003Type::class,
@@ -54,14 +52,12 @@ class TypeTest extends TestCase
                         ],
                     ],
                 ],
-                null,
             ],
             [
                 'string',
                 [
                     'type' => 'string',
                 ],
-                null,
             ],
             [
                 ['string'],
@@ -71,17 +67,12 @@ class TypeTest extends TestCase
                         'type' => 'string',
                     ],
                 ],
-                null,
             ],
 
             [
                 'string?',
                 [
                     'type' => ['string', 'null'],
-                ],
-                [
-                    'type' => 'string',
-                    'nullable' => true,
                 ],
             ],
 
@@ -93,24 +84,10 @@ class TypeTest extends TestCase
                         'type' => ['string', 'null'],
                     ],
                 ],
-                [
-                    'type' => 'array',
-                    'items' => [
-                        'type' => 'string',
-                        'nullable' => true,
-                    ],
-                ],
             ],
 
             [
                 Enum001Type::class,
-                [
-                    'type' => 'string',
-                    'enum' => [
-                        'foo',
-                        'bar',
-                    ],
-                ],
                 [
                     'type' => 'string',
                     'enum' => [
@@ -142,27 +119,6 @@ class TypeTest extends TestCase
                     ],
                     'required' => ['id', 'file'],
                 ],
-                [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer'],
-                        'name' => ['type' => 'string'],
-                        'is_admin' => ['type' => 'boolean'],
-                        'file' => ['type' => 'string', 'format' => 'binary',],
-                        'nullable_field' => ['type' => 'string', 'nullable' => true],
-                        'date' => [
-                            'type' => 'string',
-                            'format' => 'date',
-                            'nullable' => true,
-                            'pattern' => '^\d{4}-\d{2}-\d{2}$',
-                        ],
-                        'time' => [
-                            'type' => 'string',
-                            'pattern' => '^\d{2}:\d{2}:\d{2}$',
-                        ],
-                    ],
-                    'required' => ['id', 'file'],
-                ],
             ],
 
             [
@@ -180,24 +136,6 @@ class TypeTest extends TestCase
                             'type' => 'array',
                             'items' => [
                                 'type' => ['string', 'null'],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'type' => 'object',
-                    'properties' => [
-                        'field1' => [
-                            'type' => 'array',
-                            'items' => [
-                                'type' => 'string',
-                            ],
-                        ],
-                        'field2' => [
-                            'type' => 'array',
-                            'items' => [
-                                'type' => 'string',
-                                'nullable' => true,
                             ],
                         ],
                     ],
@@ -224,33 +162,6 @@ class TypeTest extends TestCase
                                         'type' => 'array',
                                         'items' => [
                                             'type' => ['string', 'null'],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'required' => ['related1'],
-                    'type' => 'object',
-                    'properties' => [
-                        'related1' => [
-                            'type' => 'array',
-                            'items' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'field1' => [
-                                        'type' => 'array',
-                                        'items' => [
-                                            'type' => 'string',
-                                        ],
-                                    ],
-                                    'field2' => [
-                                        'type' => 'array',
-                                        'items' => [
-                                            'type' => 'string',
-                                            'nullable' => true,
                                         ],
                                     ],
                                 ],
@@ -304,51 +215,6 @@ class TypeTest extends TestCase
                         ],
                     ],
                 ],
-                [
-                    'type' => 'object',
-                    'properties' => [
-                        'related1' => [
-                            'type' => 'object',
-                            'properties' => [
-                                'id' => ['type' => 'integer'],
-                                'name' => ['type' => 'string'],
-                                'is_admin' => ['type' => 'boolean'],
-                                'file' => ['type' => 'string', 'format' => 'binary',],
-                                'nullable_field' => ['type' => 'string', 'nullable' => true],
-                                'date' => [
-                                    'type' => 'string',
-                                    'format' => 'date',
-                                    'nullable' => true,
-                                    'pattern' => '^\d{4}-\d{2}-\d{2}$',
-                                ],
-                                'time' => [
-                                    'type' => 'string',
-                                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
-                                ],
-                            ],
-                            'required' => ['id', 'file'],
-
-                        ],
-                        'related2' => [
-                            'type' => 'object',
-                            'properties' => [
-                                'field1' => [
-                                    'type' => 'array',
-                                    'items' => [
-                                        'type' => 'string',
-                                    ],
-                                ],
-                                'field2' => [
-                                    'type' => 'array',
-                                    'items' => [
-                                        'type' => 'string',
-                                        'nullable' => true,
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
             ],
 
             [
@@ -378,7 +244,7 @@ class TypeTest extends TestCase
 
                         ],
                         'related2' => [
-                            'anyOf' => [
+                            'oneOf' => [
                                 [
                                     'type' => 'null',
                                 ],
@@ -397,52 +263,6 @@ class TypeTest extends TestCase
                                                 'type' => ['string', 'null'],
                                             ],
                                         ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    'required' => ['related1'],
-                ],
-                [
-                    'type' => 'object',
-                    'properties' => [
-                        'related1' => [
-                            'type' => 'object',
-                            'properties' => [
-                                'id' => ['type' => 'integer'],
-                                'name' => ['type' => 'string'],
-                                'is_admin' => ['type' => 'boolean'],
-                                'file' => ['type' => 'string', 'format' => 'binary'],
-                                'nullable_field' => ['type' => 'string', 'nullable' => true],
-                                'date' => [
-                                    'type' => 'string',
-                                    'format' => 'date',
-                                    'nullable' => true,
-                                    'pattern' => '^\d{4}-\d{2}-\d{2}$',
-                                ],
-                                'time' => [
-                                    'type' => 'string',
-                                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
-                                ],
-                            ],
-                            'required' => ['id', 'file'],
-
-                        ],
-                        'related2' => [
-                            'type' => 'object',
-                            'properties' => [
-                                'field1' => [
-                                    'type' => 'array',
-                                    'items' => [
-                                        'type' => 'string',
-                                    ],
-                                ],
-                                'field2' => [
-                                    'type' => 'array',
-                                    'items' => [
-                                        'type' => 'string',
-                                        'nullable' => true,
                                     ],
                                 ],
                             ],
@@ -478,29 +298,7 @@ class TypeTest extends TestCase
                         'schema' => ['type' => 'number'],
                     ],
                 ],
-
-                [
-                    [
-                        'name' => 'limit',
-                        'in' => 'query',
-                        'required' => true,
-                        'schema' => ['type' => 'number'],
-                    ],
-                    [
-                        'name' => 'offset',
-                        'in' => 'query',
-                        'required' => false,
-                        'schema' => ['type' => 'number', 'nullable' => true],
-                    ],
-                    [
-                        'name' => 'default_in',
-                        'in' => 'query',
-                        'required' => false,
-                        'schema' => ['type' => 'number'],
-                    ],
-                ],
             ],
-
             [
                 [Product001Type::class],
                 [
@@ -537,42 +335,6 @@ class TypeTest extends TestCase
                         'required' => ['id', 'file'],
                     ],
                 ],
-                [
-                    'type' => 'array',
-                    'items' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'id' => [
-                                'type' => 'integer',
-                            ],
-                            'name' => [
-                                'type' => 'string',
-                            ],
-                            'is_admin' => [
-                                'type' => 'boolean',
-                            ],
-                            'file' => [
-                                'type' => 'string',
-                                'format' => 'binary',
-                            ],
-                            'nullable_field' => [
-                                'type' => 'string',
-                                'nullable' => true,
-                            ],
-                            'date' => [
-                                'type' => 'string',
-                                'format' => 'date',
-                                'nullable' => true,
-                                'pattern' => '^\d{4}-\d{2}-\d{2}$',
-                            ],
-                            'time' => [
-                                'type' => 'string',
-                                'pattern' => '^\d{2}:\d{2}:\d{2}$',
-                            ],
-                        ],
-                        'required' => ['id', 'file'],
-                    ],
-                ],
             ],
         ];
     }
@@ -581,16 +343,14 @@ class TypeTest extends TestCase
      * @dataProvider typeToArrayCases
      * @param $type
      * @param $expect1
-     * @param $expect2
      */
-    public function testTypeToArray($type, $expect1, $expect2)
+    public function testTypeToArray($type, $expect1)
     {
         $parser = new TypeParser(TypeParser::MODE_JSON_SCHEMA);
-        var_dump($parser->parse($type));
         $this->assertEquals($expect1, $parser->parse($type));
 
         $parser = new TypeParser(TypeParser::MODE_OPEN_API);
-        $this->assertEquals($expect2 ?? $expect1, $parser->parse($type));
+        $this->assertEquals($expect1, $parser->parse($type));
     }
 
     public function typeToArrayWithRefCases()
@@ -614,8 +374,7 @@ class TypeTest extends TestCase
                             'field2' => [
                                 'type' => 'array',
                                 'items' => [
-                                    'type' => 'string',
-                                    'nullable' => true,
+                                    'type' => ['string', 'null'],
                                 ],
                             ],
                         ],
@@ -797,7 +556,7 @@ class TypeTest extends TestCase
                     'type' => 'object',
                     'properties' => [
                         'foo' => [
-                            'anyOf' => [
+                            'oneOf' => [
                                 ['type' => 'null'],
                             ],
                         ],

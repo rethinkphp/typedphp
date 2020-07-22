@@ -378,7 +378,7 @@ class TypeTest extends TestCase
 
                         ],
                         'related2' => [
-                            'anyOf' => [
+                            'oneOf' => [
                                 [
                                     'type' => 'null',
                                 ],
@@ -586,11 +586,13 @@ class TypeTest extends TestCase
     public function testTypeToArray($type, $expect1, $expect2)
     {
         $parser = new TypeParser(TypeParser::MODE_JSON_SCHEMA);
-        var_dump($parser->parse($type));
         $this->assertEquals($expect1, $parser->parse($type));
 
         $parser = new TypeParser(TypeParser::MODE_OPEN_API);
         $this->assertEquals($expect2 ?? $expect1, $parser->parse($type));
+
+        $parser = new TypeParser(TypeParser::MODE_OPEN_API | TypeParser::MODE_OPEN_API_31);
+        $this->assertEquals($expect1, $parser->parse($type));
     }
 
     public function typeToArrayWithRefCases()
@@ -797,7 +799,7 @@ class TypeTest extends TestCase
                     'type' => 'object',
                     'properties' => [
                         'foo' => [
-                            'anyOf' => [
+                            'oneOf' => [
                                 ['type' => 'null'],
                             ],
                         ],

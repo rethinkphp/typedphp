@@ -29,6 +29,7 @@ class TypeParser
     const MODE_JSON_SCHEMA = 1;
     const MODE_OPEN_API = 2;
     const MODE_REF_SCHEMA = 4;
+    const MODE_OPEN_API_31 = 8;
 
     protected $mode = 0;
     protected $builtinTypes = [];
@@ -148,9 +149,7 @@ class TypeParser
             'in' => $fetcher,
             'schema' => $schema,
         ];
-        if ($required) {
-            $result['required'] = $required;
-        }
+        $result['required'] = $required;
         return $result;
     }
 
@@ -234,9 +233,14 @@ class TypeParser
         }
     }
 
+    protected function isVersion31()
+    {
+        return $this->mode & self::MODE_OPEN_API_31;
+    }
+
     protected function makeNullableSchema(array $schema, $nullable)
     {
-        if ($this->mode & self::MODE_OPEN_API) {
+        if (($this->mode & self::MODE_OPEN_API) && ! $this->isVersion31()) {
             // OpenAPI specficition does not support this, just ingore the nullable setting.
             return $schema;
         }
@@ -246,7 +250,7 @@ class TypeParser
         }
 
         return [
-            'anyOf' => [
+            'oneOf' => [
                 ['type' => 'null'],
                 $schema,
             ],
@@ -265,6 +269,8 @@ class TypeParser
         $schema = $typeClass::toArray();
 
         if (($this->mode & self::MODE_JSON_SCHEMA) && $nullable) {
+            $schema['type'] = [$schema['type'], 'null'];
+        } elseif (($this->mode & self::MODE_OPEN_API) && $this->isVersion31() && $nullable) {
             $schema['type'] = [$schema['type'], 'null'];
         } elseif (($this->mode & self::MODE_OPEN_API) && $nullable) {
             $schema['nullable'] = $nullable;

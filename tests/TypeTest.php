@@ -641,6 +641,83 @@ class TypeTest extends TestCase
     public function inputDataCases()
     {
         return [
+            // cast integer to bool values
+            [
+                [
+                    'query' => ['a' => '1'],
+                ],
+                [
+                    [
+                        'name' => 'a',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => [
+                            'type' => 'boolean',
+                        ],
+                    ],
+                ],
+                [],
+                [
+                    'query' => ['a' => true],
+                ],
+            ],
+            [
+                [
+                    'query' => ['a' => '0'],
+                ],
+                [
+                    [
+                        'name' => 'a',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => [
+                            'type' => 'boolean',
+                        ],
+                    ],
+                ],
+                [],
+                [
+                    'query' => ['a' => false],
+                ],
+            ],
+            [
+                [
+                    'query' => ['a' => 1],
+                ],
+                [
+                    [
+                        'name' => 'a',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => [
+                            'type' => 'boolean',
+                        ],
+                    ],
+                ],
+                [],
+                [
+                    'query' => ['a' => true],
+                ],
+            ],
+            [
+                [
+                    'query' => ['a' => 0],
+                ],
+                [
+                    [
+                        'name' => 'a',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => [
+                            'type' => 'boolean',
+                        ],
+                    ],
+                ],
+                [],
+                [
+                    'query' => ['a' => false],
+                ],
+            ],
             // missing required input field
             [
                 [

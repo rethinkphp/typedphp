@@ -3,7 +3,9 @@
 namespace rethink\typedphp;
 
 use JsonSchema\Constraints\Constraint;
+use JsonSchema\Constraints\Factory;
 use JsonSchema\Validator;
+use rethink\typedphp\constraints\TypeConstraint;
 
 /**
  * Class InputValidator
@@ -37,8 +39,11 @@ class InputValidator
         }
 
         $schema = $definition['schema'];
+        
+        $factory = new Factory();
+        $factory->setConstraintClass('type', TypeConstraint::class);
 
-        $validator = new Validator();
+        $validator = new Validator($factory);
 
         $result = $data[$definition['name']];
 

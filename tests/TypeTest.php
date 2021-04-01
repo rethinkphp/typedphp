@@ -718,6 +718,44 @@ class TypeTest extends TestCase
                     'query' => ['a' => false],
                 ],
             ],
+            [
+                [
+                    'query' => ['a' => 'true'],
+                ],
+                [
+                    [
+                        'name' => 'a',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => [
+                            'type' => 'boolean',
+                        ],
+                    ],
+                ],
+                [],
+                [
+                    'query' => ['a' => true],
+                ],
+            ],
+            [
+                [
+                    'query' => ['a' => 'false'],
+                ],
+                [
+                    [
+                        'name' => 'a',
+                        'in' => 'query',
+                        'required' => true,
+                        'schema' => [
+                            'type' => 'boolean',
+                        ],
+                    ],
+                ],
+                [],
+                [
+                    'query' => ['a' => false],
+                ],
+            ],
             // missing required input field
             [
                 [

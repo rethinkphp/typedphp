@@ -314,16 +314,28 @@ class TypeParser
 
     protected function parseString($definition)
     {
+        static $cached = [];
         $newDefinition = trim($definition, '?');
-        if (is_subclass_of($newDefinition, ProductType::class)) {
-            return $this->parseObject($definition);
-        } elseif (is_subclass_of($newDefinition, SumType::class)) {
-            return $this->parseEnum($definition);
-        } elseif (is_subclass_of($newDefinition, MapType::class)) {
-            return $this->parseMap($newDefinition);
-        } else {
-            return $this->parseScalar($definition);
+
+        $key = $definition;
+        if (is_subclass_of($newDefinition, MapType::class)) {
+            $key = $newDefinition;
         }
+
+        if (isset($cached[$key])) {
+            return $cached[$key];
+        }
+
+        if (is_subclass_of($newDefinition, ProductType::class)) {
+            $cached[$key] = $this->parseObject($definition);
+        } elseif (is_subclass_of($newDefinition, SumType::class)) {
+            $cached[$key]=  $this->parseEnum($definition);
+        } elseif (is_subclass_of($newDefinition, MapType::class)) {
+            $cached[$key] = $this->parseMap($newDefinition);
+        } else {
+            $cached[$key] = $this->parseScalar($definition);
+        }
+        return $cached[$key];
     }
 
     /**

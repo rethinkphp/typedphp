@@ -10,6 +10,7 @@ use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\MapType;
 use rethink\typedphp\types\ProductType;
 use rethink\typedphp\types\SumType;
+use rethink\typedphp\types\UnionType;
 use rethink\typedphp\TypeValidator;
 
 /**
@@ -19,8 +20,62 @@ use rethink\typedphp\TypeValidator;
  */
 class TypeTest extends TestCase
 {
+
+    protected function product001Schema(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'id' => ['type' => 'integer'],
+                'name' => ['type' => 'string'],
+                'is_admin' => ['type' => 'boolean'],
+                'file' => ['type' => 'string', 'format' => 'binary',],
+                'nullable_field' => ['type' => ['string', 'null']],
+                'date' => [
+                    'type' => ['string', 'null'],
+                    'format' => 'date',
+                    'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                ],
+                'time' => [
+                    'type' => 'string',
+                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
+                ],
+            ],
+            'required' => ['id', 'file'],
+        ];
+    }
+
+    protected function product001SchemaWithNull(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'id' => ['type' => 'integer'],
+                'name' => ['type' => 'string'],
+                'is_admin' => ['type' => 'boolean'],
+                'file' => ['type' => 'string', 'format' => 'binary',],
+                'nullable_field' => ['type' => 'string', 'nullable' => true],
+                'date' => [
+                    'type' => 'string',
+                    'format' => 'date',
+                    'nullable' => true,
+                    'pattern' => '^\d{4}-\d{2}-\d{2}$',
+                ],
+                'time' => [
+                    'type' => 'string',
+                    'pattern' => '^\d{2}:\d{2}:\d{2}$',
+                ],
+            ],
+            'required' => ['id', 'file'],
+        ];
+    }
+
     public function typeToArrayCases()
     {
+        $product001Schema = $this->product001Schema();
+
+        $product001SchemaWithNull = $this->product001SchemaWithNull();
+
         return [
             [
                 Map001Type::class,
@@ -574,6 +629,31 @@ class TypeTest extends TestCase
                     ],
                 ],
             ],
+            [
+                Union001Type::class,
+                [
+                    'oneOf' => [
+                        [
+                            'type' => 'string',
+                        ],
+                        [
+                            'type' => 'integer',
+                        ],
+                        $product001Schema,
+                    ],
+                ],
+                [
+                    'oneOf' => [
+                        [
+                            'type' => 'string',
+                        ],
+                        [
+                            'type' => 'integer',
+                        ],
+                        $product001SchemaWithNull,
+                    ],
+                ]
+            ],
         ];
     }
 
@@ -623,6 +703,28 @@ class TypeTest extends TestCase
                         ],
                     ],
                 ],
+            ],
+            [
+                Union001Type::class . '?',
+                [
+                    'oneOf' => [
+                        [
+                            'type' => 'string',
+                        ],
+                        [
+                            'type' => 'integer',
+                        ],
+                        [
+                            '$ref' => '#/components/schemas/Product001',
+                        ],
+                        [
+                            'type' => 'null',
+                        ],
+                    ],
+                ],
+                [
+                    'Product001' => $this->product001SchemaWithNull(),
+                ]
             ],
         ];
     }
@@ -1034,7 +1136,6 @@ class Dict003ItemType extends ProductType
 
 class Map003Type extends MapType
 {
-
     public static function valueType(): string
     {
         return Dict003ItemType::class;
@@ -1044,5 +1145,16 @@ class Map003Type extends MapType
     {
         return [];
     }
+}
 
+class Union001Type extends UnionType
+{
+    public static function allowedTypes(): array
+    {
+        return [
+            'string',
+            'integer',
+            Product001Type::class,
+        ];
+    }
 }

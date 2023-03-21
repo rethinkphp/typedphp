@@ -4,12 +4,7 @@ namespace rethink\typedphp\types;
 
 use rethink\typedphp\TypeParser;
 
-/**
- * Class ProductType
- *
- * @package rethink\typedphp\types
- */
-abstract class ProductType implements Type
+abstract class UnionType implements Type
 {
     public static function name()
     {
@@ -19,6 +14,8 @@ abstract class ProductType implements Type
 
         return substr($name, 0, strlen($name) - 4);
     }
+
+    abstract public static function allowedTypes(): array;
 
     public static function toArray()
     {

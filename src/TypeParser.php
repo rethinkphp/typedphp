@@ -18,6 +18,7 @@ use rethink\typedphp\types\SumType;
 use rethink\typedphp\types\TimestampType;
 use rethink\typedphp\types\TimeType;
 use rethink\typedphp\types\Type;
+use rethink\typedphp\types\UnionType;
 
 /**
  * Class TypeParser
@@ -312,6 +313,30 @@ class TypeParser
         return $this->makeNullableSchema($schema, $nullable);
     }
 
+    protected function parseUnion(string $definition): array
+    {
+        $nullable = false;
+        if ($this->isNullable($definition)) {
+            $nullable = true;
+            $definition = trim($definition, '?');
+        }
+
+        assert(is_subclass_of($definition, UnionType::class));
+
+        $types = [];
+        foreach ($definition::allowedTypes() as $allowedType) {
+            $types[] = $this->parse($allowedType);
+        }
+
+        if ($nullable) {
+            $types[] = ['type' => 'null'];
+        }
+
+        return [
+            'oneOf' => $types,
+        ];
+    }
+
     protected function parseString($definition)
     {
         static $cached = [];
@@ -331,7 +356,9 @@ class TypeParser
         } elseif (is_subclass_of($newDefinition, SumType::class)) {
             $cached[$key]=  $this->parseEnum($definition);
         } elseif (is_subclass_of($newDefinition, MapType::class)) {
-            $cached[$key] = $this->parseMap($newDefinition);
+            $cached[$key] = $this->parseMap($definition);
+        } elseif (is_subclass_of($newDefinition, UnionType::class)) {
+            $cached[$key] = $this->parseUnion($definition);
         } else {
             $cached[$key] = $this->parseScalar($definition);
         }

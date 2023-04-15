@@ -18,6 +18,7 @@ use rethink\typedphp\types\SumType;
 use rethink\typedphp\types\TimestampType;
 use rethink\typedphp\types\TimeType;
 use rethink\typedphp\types\Type;
+use rethink\typedphp\types\UnionType;
 
 /**
  * Class TypeParser
@@ -240,11 +241,6 @@ class TypeParser
 
     protected function makeNullableSchema(array $schema, $nullable)
     {
-        if (($this->mode & self::MODE_OPEN_API) && ! $this->isVersion31()) {
-            // OpenAPI specficition does not support this, just ingore the nullable setting.
-            return $schema;
-        }
-
         if (! $nullable) {
             return $schema;
         }
@@ -268,12 +264,8 @@ class TypeParser
         $typeClass = $this->getValidTypeClass($definition);
         $schema = $typeClass::toArray();
 
-        if (($this->mode & self::MODE_JSON_SCHEMA) && $nullable) {
+        if ($nullable) {
             $schema['type'] = [$schema['type'], 'null'];
-        } elseif (($this->mode & self::MODE_OPEN_API) && $this->isVersion31() && $nullable) {
-            $schema['type'] = [$schema['type'], 'null'];
-        } elseif (($this->mode & self::MODE_OPEN_API) && $nullable) {
-            $schema['nullable'] = $nullable;
         }
 
         return $schema;
@@ -312,6 +304,30 @@ class TypeParser
         return $this->makeNullableSchema($schema, $nullable);
     }
 
+    protected function parseUnion(string $definition): array
+    {
+        $nullable = false;
+        if ($this->isNullable($definition)) {
+            $nullable = true;
+            $definition = trim($definition, '?');
+        }
+
+        assert(is_subclass_of($definition, UnionType::class));
+
+        $types = [];
+        foreach ($definition::allowedTypes() as $allowedType) {
+            $types[] = $this->parse($allowedType);
+        }
+
+        if ($nullable) {
+            $types[] = ['type' => 'null'];
+        }
+
+        return [
+            'oneOf' => $types,
+        ];
+    }
+
     protected function parseString($definition)
     {
         static $cached = [];
@@ -322,6 +338,8 @@ class TypeParser
             $key = $newDefinition;
         }
 
+        $key = $this->mode & self::MODE_REF_SCHEMA ? 'ref:' . $key : $key;
+
         if (isset($cached[$key])) {
             return $cached[$key];
         }
@@ -331,7 +349,9 @@ class TypeParser
         } elseif (is_subclass_of($newDefinition, SumType::class)) {
             $cached[$key]=  $this->parseEnum($definition);
         } elseif (is_subclass_of($newDefinition, MapType::class)) {
-            $cached[$key] = $this->parseMap($newDefinition);
+            $cached[$key] = $this->parseMap($definition);
+        } elseif (is_subclass_of($newDefinition, UnionType::class)) {
+            $cached[$key] = $this->parseUnion($definition);
         } else {
             $cached[$key] = $this->parseScalar($definition);
         }

@@ -38,7 +38,7 @@ class TypeValidator
         if (empty($error['property'])) {
             return $error['message'];
         } else {
-            return "The data of \"${error['property']}\" is invalid, " . lcfirst($error['message']);
+            return "The data of \"{$error['property']}\" is invalid, " . lcfirst($error['message']);
         }
     }
 

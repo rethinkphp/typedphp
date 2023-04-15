@@ -32,7 +32,7 @@ class InputValidator
     protected function validateInternal($definition, $data, &$result)
     {
         if (($definition['required'] ?? false) && !array_key_exists($definition['name'], $data)) {
-            $this->errors[] = "The required ${definition['in']} parameter: '${definition['name']}' is required";
+            $this->errors[] = "The required {$definition['in']} parameter: '{$definition['name']}' is required";
             return false;
         } else if (!array_key_exists($definition['name'], $data)) {
             return false;
@@ -51,7 +51,7 @@ class InputValidator
 
         if (!$validator->isValid()) {
             foreach ($validator->getErrors() as $error) {
-                $this->errors[] = "The type of ${definition['in']} parameter \"${definition['name']}\" is invalid, " . lcfirst($error['message']);
+                $this->errors[] = "The type of {$definition['in']} parameter \"{$definition['name']}\" is invalid, " . lcfirst($error['message']);
             }
             return false;
         }

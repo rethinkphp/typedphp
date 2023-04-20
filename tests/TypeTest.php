@@ -378,6 +378,27 @@ class TypeTest extends TestCase
                     ],
                 ],
             ],
+            [
+                RecursiveType::class,
+                [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                        ],
+                        'sub' => [
+                            'oneOf' => [
+                                [
+                                    'type' => 'null'
+                                ],
+                                [
+                                    '$ref' => '#/components/schemas/Recursive',
+                                ]
+                            ],
+                        ],
+                    ],
+                ],
+            ]
         ];
     }
 
@@ -688,6 +709,26 @@ class TypeTest extends TestCase
 
     public function dataCases()
     {
+        $nestedSchema = [
+            'type' => 'object',
+            'properties' => [
+                'name' => [
+                    'type' => 'string',
+                ],
+                'sub' => [
+                    'oneOf' => [
+                        [
+                            'type' => 'null'
+                        ],
+                        [
+                            '$ref' => '#/components/schemas/Recursive',
+                        ]
+                    ],
+                ],
+            ],
+            'required' => ['name', 'sub'],
+        ];
+
         return [
             [
                 '1',
@@ -743,6 +784,28 @@ class TypeTest extends TestCase
                 ],
                 [],
             ],
+
+            # validate nested data type
+            [
+                [
+                    'name' => 'foobar',
+                    'sub' => [
+                        'name' => 'sub foobar',
+                        'sub' => [
+                            'name' => 'sub sub foobar',
+                            'sub' => null,
+                        ],
+                    ]
+                ],
+                $nestedSchema + [
+                    'components' => [
+                        'schemas' => [
+                            'Recursive' => $nestedSchema,
+                        ],
+                    ]
+                ],
+                [],
+            ]
         ];
     }
 
@@ -876,4 +939,10 @@ class Union001Type extends UnionType
             Product001Type::class,
         ];
     }
+}
+
+class RecursiveType extends ProductType
+{
+    public static $name = 'string';
+    public static $sub = RecursiveType::class . '?';
 }

@@ -37,6 +37,8 @@ class TypeParser
 
     protected $schemas = [];
 
+    protected $object_chains = [];
+
     public function __construct($mode)
     {
         $this->mode = $mode;
@@ -172,47 +174,73 @@ class TypeParser
 
         $definitionName = $definition::name();
 
+        $isNestedType = in_array($definitionName, $this->object_chains);
+
         if (($this->mode & self::MODE_REF_SCHEMA) && isset($this->schemas[$definition])) {
             return $this->makeNullableSchema([
                 '$ref' => '#/components/schemas/' . $definitionName,
             ], $nullable);
         }
 
-        $reflection = new \ReflectionClass($definition);
-        $properties = [];
-        $requiredFields = [];
+        $this->object_chains[] = $definitionName;
 
-        foreach ($reflection->getStaticProperties() as $property => $tmpDefinition) {
-            list($required, $schema) = $this->parseField($tmpDefinition);
-            $comment = $reflection->getProperty($property)->getDocComment();
-            if ($comment) {
-                $docblock = DocBlockFactory::createInstance()->create($comment);
-                $schema['title'] = trim($docblock->getSummary());
-                $schema['description'] = trim($docblock->getDescription()->render());
-            }
-            $properties[$property] = $schema;
-
-            if ($required) {
-                $requiredFields[] = $property;
-            }
-        }
-
-        $schema = [
-            'type' => 'object',
-            'properties' => $properties,
-        ];
-        if ($requiredFields) {
-            $schema['required'] = $requiredFields;
-        }
-
-        if ($this->mode & self::MODE_REF_SCHEMA) {
-            $this->schemas[$definitionName] = $schema;
-            return $this->makeNullableSchema([
+        if ($isNestedType) {
+            $result = $this->makeNullableSchema([
                 '$ref' => '#/components/schemas/' . $definitionName,
             ], $nullable);
         } else {
-            return $this->makeNullableSchema($schema, $nullable);
+            $result = $this->parseObjectSchema($definitionName, $definition, $nullable);
         }
+
+        array_pop($this->object_chains);
+
+        return $result;
+    }
+
+    protected function parseObjectSchema(string $name, string $definition, bool $nullable): array
+    {
+        if (!isset($this->schemas[$name])) {
+            $reflection = new \ReflectionClass($definition);
+            $properties = [];
+            $requiredFields = [];
+
+            foreach ($reflection->getStaticProperties() as $property => $tmpDefinition) {
+                list($required, $schema) = $this->parseField($tmpDefinition);
+                $comment = $reflection->getProperty($property)->getDocComment();
+                if ($comment) {
+                    $docblock = DocBlockFactory::createInstance()->create($comment);
+                    $schema['title'] = trim($docblock->getSummary());
+                    $schema['description'] = trim($docblock->getDescription()->render());
+                }
+                $properties[$property] = $schema;
+
+                if ($required) {
+                    $requiredFields[] = $property;
+                }
+            }
+
+            $schema = [
+                'type' => 'object',
+                'properties' => $properties,
+            ];
+            if ($requiredFields) {
+                $schema['required'] = $requiredFields;
+            }
+
+            $this->schemas[$name] = $schema;
+        } else {
+            $schema = $this->schemas[$name];
+        }
+
+        if (($this->mode & self::MODE_REF_SCHEMA)) {
+            $result = $this->makeNullableSchema([
+                '$ref' => '#/components/schemas/' . $name,
+            ], $nullable);
+        } else {
+            $result = $this->makeNullableSchema($schema, $nullable);
+        }
+
+        return $result;
     }
 
     protected function parseEnum(string $definition)

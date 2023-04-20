@@ -449,20 +449,27 @@ class TypeTest extends TestCase
                 [
                     'oneOf' => [
                         [
-                            'type' => 'string',
-                        ],
-                        [
-                            'type' => 'integer',
-                        ],
-                        [
-                            '$ref' => '#/components/schemas/Product001',
-                        ],
-                        [
                             'type' => 'null',
+                        ],
+                        [
+                            '$ref' => '#/components/schemas/Union001',
                         ],
                     ],
                 ],
                 [
+                    'Union001' => [
+                        'oneOf' => [
+                            [
+                                'type' => 'string',
+                            ],
+                            [
+                                'type' => 'integer',
+                            ],
+                            [
+                                '$ref' => '#/components/schemas/Product001',
+                            ],
+                        ],
+                    ],
                     'Product001' => $this->product001Schema(),
                 ]
             ],

@@ -347,6 +347,17 @@ class TypeParser
             $types[] = $this->parse($allowedType);
         }
 
+        if ($this->mode & self::MODE_REF_SCHEMA) {
+            $definitionName = $definition::name();
+            $this->schemas[$definitionName] = [
+                'oneOf' => $types,
+            ];
+
+            return $this->makeNullableSchema([
+                '$ref' => '#/components/schemas/' . $definitionName,
+            ], $nullable);
+        }
+
         if ($nullable) {
             $types[] = ['type' => 'null'];
         }

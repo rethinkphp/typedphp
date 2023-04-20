@@ -379,6 +379,21 @@ class TypeTest extends TestCase
                 ],
             ],
             [
+                Discriminated001Type::class,
+                [
+                    'type' => 'object',
+                    'properties' => [
+                        'type' => [
+                            'type' => 'string',
+                            'x-discriminated' => 'foobar',
+                        ],
+                        'field1' => [
+                            'type' => 'string',
+                        ],
+                    ]
+                ],
+            ],
+            [
                 RecursiveType::class,
                 [
                     'type' => 'object',
@@ -946,6 +961,15 @@ class Union001Type extends UnionType
             Product001Type::class,
         ];
     }
+}
+
+class Discriminated001Type extends ProductType
+{
+    /**
+     * @discriminated foobar
+     */
+    public static string $type = 'string';
+    public static string $field1 = 'string';
 }
 
 class RecursiveType extends ProductType

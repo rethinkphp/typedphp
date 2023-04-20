@@ -209,8 +209,19 @@ class TypeParser
                 $comment = $reflection->getProperty($property)->getDocComment();
                 if ($comment) {
                     $docblock = DocBlockFactory::createInstance()->create($comment);
-                    $schema['title'] = trim($docblock->getSummary());
-                    $schema['description'] = trim($docblock->getDescription()->render());
+                    $title = trim($docblock->getSummary());
+                    if ($title) {
+                        $schema['title'] = $title;
+                    }
+                    $description = trim($docblock->getDescription()->render());
+                    if ($description) {
+                        $schema['description'] = $description;
+                    }
+
+                    $tag = $docblock->getTagsByName('discriminated')[0] ?? null;
+                    if ($tag) {
+                        $schema['x-discriminated'] = $tag->getDescription()->render();
+                    }
                 }
                 $properties[$property] = $schema;
 

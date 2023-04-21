@@ -218,9 +218,11 @@ class TypeParser
                         $schema['description'] = $description;
                     }
 
-                    $tag = $docblock->getTagsByName('discriminated')[0] ?? null;
+                    $tag = $docblock->getTagsByName('enum')[0] ?? null;
                     if ($tag) {
-                        $schema['x-discriminated'] = $tag->getDescription()->render();
+                        $schema['type'] = 'string';
+                        $schema['enum'] = preg_split("/\s*[,]\s*/u", $tag->getDescription()->render(), -1, PREG_SPLIT_NO_EMPTY);
+                        unset($schema['$ref']);
                     }
                 }
                 $properties[$property] = $schema;

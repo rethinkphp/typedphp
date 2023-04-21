@@ -385,7 +385,7 @@ class TypeTest extends TestCase
                     'properties' => [
                         'type' => [
                             'type' => 'string',
-                            'x-discriminated' => 'foobar',
+                            'enum' => ['foobar'],
                         ],
                         'field1' => [
                             'type' => 'string',
@@ -966,7 +966,7 @@ class Union001Type extends UnionType
 class Discriminated001Type extends ProductType
 {
     /**
-     * @discriminated foobar
+     * @enum foobar
      */
     public static string $type = 'string';
     public static string $field1 = 'string';

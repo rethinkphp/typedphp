@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phpdocumentor/reflection-docblock": "^5.3",
+        "phpdocumentor/reflection-docblock": "^4.3 || ^5.0",
         "justinrainbow/json-schema": "^5.2"
     },
     "require-dev": {

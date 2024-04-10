@@ -2,10 +2,12 @@
 
 namespace rethink\typedphp;
 
-use ReflectionClass;
 use InvalidArgumentException;
-use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\DocBlock;
+use phpDocumentor\Reflection\DocBlockFactory;
+use ReflectionClass;
+use rethink\typedphp\security\ScopeInterface;
+use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * Class DocGenerator
@@ -63,6 +65,7 @@ class DocGenerator
             'operationId' => $this->getStaticProperty($class, 'op'),
             'parameters' => $parameters ? $this->parser->parse($parameters) : [],
             'responses' => (object)$this->buildResponses($apiClass, $class),
+            'security' => $this->buildSecurity($apiClass),
         ];
 
         if ($bodyDefinition = $this->buildRequestBody($apiClass, $class)) {
@@ -120,17 +123,75 @@ class DocGenerator
             $docblock = DocBlockFactory::createInstance()->create($comment);
             $tags = $docblock->getTagsByName('content-type');
             if (count($tags)) {
-                return trim((string) $tags[0]->getDescription());
+                return trim((string)$tags[0]->getDescription());
             }
         }
         return null;
+    }
+
+    /**
+     * @param $apiClass
+     * @return array
+     * @link https://spec.openapis.org/oas/v3.0.1#security-requirement-object
+     */
+    protected function buildSecurity($apiClass): array
+    {
+        if (method_exists($apiClass, 'scopes') === false) {
+            return [];
+        }
+
+        $scopes = $apiClass::scopes();
+
+        // supported format:
+        // 1. Scope
+        // 2. [Scope1, Scope2] AND relation
+        // 3. [[Scope1, Scope2], [Scope3, Scope4]] OR relation
+
+        // only 1 scope
+        if ($scopes instanceof ScopeInterface) {
+            return [
+                [
+                    $scopes->schemeName() => [
+                        $scopes->name(),
+                    ],
+                ]
+            ];
+        }
+
+        if (is_array($scopes)) {
+            // multiple scopes with AND relation
+            if (current($scopes) instanceof ScopeInterface) {
+                return [
+                    $this->buildForAndScopes(...$scopes)
+                ];
+            }
+            // multiple scopes with OR relation
+            if (is_array(current($scopes))) {
+                $security = [];
+                foreach ($scopes as $scope) {
+                    $security[] = $this->buildForAndScopes(...$scope);
+                }
+                return $security;
+            }
+        }
+
+        throw new InvalidArgumentException('Invalid scopes definition.');
+    }
+
+    protected function buildForAndScopes(ScopeInterface ...$scopes): array
+    {
+        $result = [];
+        foreach ($scopes as $scope) {
+            $result[$scope->schemeName()][] = $scope->name();
+        }
+        return $result;
     }
 
     protected function buildResponses($apiClass, \ReflectionClass $class)
     {
         $responses = [];
 
-        foreach ($apiClass::responses() as $code => $responseDefinition)  {
+        foreach ($apiClass::responses() as $code => $responseDefinition) {
 
             if ($responseDefinition !== null) {
                 $responses[$code] = [
@@ -186,6 +247,58 @@ class DocGenerator
         return [
             'paths' => (object)$this->buildPathsObject(),
             'schemas' => (object)$this->parser->getSchemas(),
+            'securitySchemes' => (object)$this->buildSecuritySchemes(),
         ];
+    }
+
+    /**
+     * @return array
+     * @link https://spec.openapis.org/oas/v3.0.1#security-scheme-object
+     */
+    protected function buildSecuritySchemes(): array
+    {
+        $scopes = [];
+        foreach ($this->apiClasses as $apiClass) {
+            if (method_exists($apiClass, 'scopes')) {
+                $scopes[] = $this->collectScopes($apiClass::scopes());
+            }
+        }
+        $scopes = array_merge([], ...$scopes);
+
+        $securitySchemes = [];
+        /** @var ScopeInterface $scope */
+        foreach ($scopes as $scope) {
+            if (isset($securitySchemes[$scope->schemeName()])) {
+                $securitySchemes[$scope->schemeName()]['flows']['authorizationCode']['scopes'][$scope->name()] = $scope->description();
+            } else {
+                $securitySchemes[$scope->schemeName()] = [
+                    'type' => 'oauth2',
+                    'flows' => [
+                        'clientCredentials' => [
+                            'tokenUrl' => '',
+                            'scopes' => [
+                                $scope->name() => $scope->description(),
+                            ],
+                        ],
+                    ],
+                ];
+            }
+        }
+        return $securitySchemes;
+    }
+
+    protected function collectScopes($scopes): array
+    {
+        if ($scopes instanceof ScopeInterface) {
+            return [$scopes];
+        }
+        if (is_array($scopes)) {
+            $result = [];
+            foreach ($scopes as $scope) {
+                $result[] = $this->collectScopes($scope);
+            }
+            return array_merge([], ...$result);
+        }
+        throw new InvalidArgumentException('Invalid scopes definition.');
     }
 }

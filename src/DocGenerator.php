@@ -269,7 +269,7 @@ class DocGenerator
         /** @var ScopeInterface $scope */
         foreach ($scopes as $scope) {
             if (isset($securitySchemes[$scope->schemeName()])) {
-                $securitySchemes[$scope->schemeName()]['flows']['authorizationCode']['scopes'][$scope->name()] = $scope->description();
+                $securitySchemes[$scope->schemeName()]['flows']['clientCredentials']['scopes'][$scope->name()] = $scope->description();
             } else {
                 $securitySchemes[$scope->schemeName()] = [
                     'type' => 'oauth2',

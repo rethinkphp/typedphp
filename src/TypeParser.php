@@ -8,6 +8,7 @@ use rethink\typedphp\types\BinaryType;
 use rethink\typedphp\types\BooleanType;
 use rethink\typedphp\types\DateType;
 use rethink\typedphp\types\DictType;
+use rethink\typedphp\types\DynamicType;
 use rethink\typedphp\types\InputType;
 use rethink\typedphp\types\IntegerType;
 use rethink\typedphp\types\MapType;
@@ -230,6 +231,10 @@ class TypeParser
                 if ($required) {
                     $requiredFields[] = $property;
                 }
+            }
+
+            if ($reflection->isSubclassOf(DynamicType::class)) {
+                $properties = array_merge($properties, $definition::fields());
             }
 
             $schema = [

@@ -439,4 +439,17 @@ class TypeParser
     {
         return $this->schemas;
     }
+
+    public function registerSchema(string $name, array $schema): array
+    {
+        if (isset($this->schemas[$name])) {
+            throw new InvalidArgumentException("The schema: $name is already registered");
+        }
+
+        $this->schemas[$name] = $schema;
+
+        return [
+            '$ref' => '#/components/schemas/' . $name,
+        ];
+    }
 }

@@ -239,7 +239,7 @@ class TypeParser
 
             $schema = [
                 'type' => 'object',
-                'properties' => $properties,
+                'properties' => (object)$properties,
             ];
             if ($requiredFields) {
                 $schema['required'] = $requiredFields;

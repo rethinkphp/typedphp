@@ -437,36 +437,6 @@ class TypeParser
     }
 
     /**
-     * Parse a type expression that appears as a field value inside a literal object.
-     * Handles nested literal objects, arrays of literal objects, and scalar types.
-     */
-    protected function parseLiteralTypeExpr(string $typeExpr): array
-    {
-        $core = trim($typeExpr, '?');
-        $nullable = $this->isNullable($typeExpr);
-
-        if ($core[0] === '{') {
-            return $this->parseLiteralObject($typeExpr);
-        }
-
-        if ($core[0] === '[') {
-            $innerType = trim(substr($core, 1, -1));
-            if (strlen($innerType) > 0 && $innerType[0] === '{') {
-                $itemSchema = $this->parseLiteralObject($innerType);
-            } else {
-                $itemSchema = $this->parseString($innerType);
-            }
-            $schema = [
-                'type' => 'array',
-                'items' => $itemSchema,
-            ];
-            return $this->makeNullableSchema($schema, $nullable);
-        }
-
-        return $this->parseScalar($typeExpr);
-    }
-
-    /**
      * Parse a literal inline object definition, e.g.:
      *   {name: string, age: integer?, is_admin?: boolean}
      *
@@ -500,7 +470,7 @@ class TypeParser
                 $fieldName = substr($fieldName, 0, -1);
             }
 
-            $properties[$fieldName] = $this->parseLiteralTypeExpr($typeExpr);
+            $properties[$fieldName] = $this->parse($typeExpr);
 
             if (!$optional) {
                 $requiredFields[] = $fieldName;

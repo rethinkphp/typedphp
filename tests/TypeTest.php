@@ -25,7 +25,7 @@ class TypeTest extends TestCase
     {
         return [
             'type' => 'object',
-            'properties' => [
+            'properties' => (object)[
                 'id' => ['type' => 'integer'],
                 'name' => ['type' => 'string'],
                 'is_admin' => ['type' => 'boolean'],
@@ -73,7 +73,7 @@ class TypeTest extends TestCase
                     'type' => 'object',
                     'additionalProperties' => [
                         'type' => 'object',
-                        'properties' => [
+                        'properties' => (object)[
                             'name' => [
                                 'type' => 'string',
                             ],
@@ -113,7 +113,40 @@ class TypeTest extends TestCase
                     ],
                 ],
             ],
-
+            'list_of_string' => [
+                '[string]',
+                [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'string',
+                    ],
+                ]
+            ],
+            'list_of_string_or_null' => [
+                '[string?]',
+                [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => ['string', 'null'],
+                    ],
+                ]
+            ],
+            'nullable_list_of_string' => [
+                '[string]?',
+                [
+                    'oneOf' => [
+                        [
+                            'type' => 'null',
+                        ],
+                        [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'string',
+                            ],
+                        ],
+                    ],
+                ]
+            ],
             [
                 Enum001Type::class,
                 [
@@ -129,7 +162,7 @@ class TypeTest extends TestCase
                 Product001Type::class,
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'id' => ['type' => 'integer'],
                         'name' => ['type' => 'string'],
                         'is_admin' => ['type' => 'boolean'],
@@ -153,7 +186,7 @@ class TypeTest extends TestCase
                 Product002Type::class,
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'field1' => [
                             'type' => 'array',
                             'items' => [
@@ -174,12 +207,12 @@ class TypeTest extends TestCase
                 [
                     'required' => ['related1'],
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'related1' => [
                             'type' => 'array',
                             'items' => [
                                 'type' => 'object',
-                                'properties' => [
+                                'properties' => (object)[
                                     'field1' => [
                                         'type' => 'array',
                                         'items' => [
@@ -202,10 +235,10 @@ class TypeTest extends TestCase
                 Product003Type::class,
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'related1' => [
                             'type' => 'object',
-                            'properties' => [
+                            'properties' => (object)[
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
@@ -226,7 +259,7 @@ class TypeTest extends TestCase
                         ],
                         'related2' => [
                             'type' => 'object',
-                            'properties' => [
+                            'properties' => (object)[
                                 'field1' => [
                                     'type' => 'array',
                                     'items' => [
@@ -249,10 +282,10 @@ class TypeTest extends TestCase
                 Product004Type::class,
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'related1' => [
                             'type' => 'object',
-                            'properties' => [
+                            'properties' => (object)[
                                 'id' => ['type' => 'integer'],
                                 'name' => ['type' => 'string'],
                                 'is_admin' => ['type' => 'boolean'],
@@ -278,7 +311,7 @@ class TypeTest extends TestCase
                                 ],
                                 [
                                     'type' => 'object',
-                                    'properties' => [
+                                    'properties' => (object)[
                                         'field1' => [
                                             'type' => 'array',
                                             'items' => [
@@ -333,7 +366,7 @@ class TypeTest extends TestCase
                     'type' => 'array',
                     'items' => [
                         'type' => 'object',
-                        'properties' => [
+                        'properties' => (object)[
                             'id' => [
                                 'type' => 'integer',
                             ],
@@ -382,7 +415,7 @@ class TypeTest extends TestCase
                 Discriminated001Type::class,
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'type' => [
                             'type' => 'string',
                             'enum' => ['foobar'],
@@ -397,7 +430,7 @@ class TypeTest extends TestCase
                 RecursiveType::class,
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'name' => [
                             'type' => 'string',
                         ],
@@ -442,7 +475,7 @@ class TypeTest extends TestCase
                 [
                     'Product002' => [
                         'type' => 'object',
-                        'properties' => [
+                        'properties' => (object)[
                             'field1' => [
                                 'type' => 'array',
                                 'items' => [
@@ -733,7 +766,7 @@ class TypeTest extends TestCase
     {
         $nestedSchema = [
             'type' => 'object',
-            'properties' => [
+            'properties' => (object)[
                 'name' => [
                     'type' => 'string',
                 ],
@@ -777,7 +810,7 @@ class TypeTest extends TestCase
                 ],
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'foo' => [
                             'type' => 'array',
                             'items' => [
@@ -796,7 +829,7 @@ class TypeTest extends TestCase
                 ],
                 [
                     'type' => 'object',
-                    'properties' => [
+                    'properties' => (object)[
                         'foo' => [
                             'oneOf' => [
                                 ['type' => 'null'],

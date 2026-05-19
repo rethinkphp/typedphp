@@ -106,10 +106,22 @@ class TypeParser
 
     protected function parseArray($definition)
     {
-        return [
+        if (is_string($definition)) {
+            $nullable = $this->isNullable($definition);
+            if ($nullable) {
+                $definition = trim($definition, '?');
+            }
+            $definition = [trim($definition, '[]')];
+        } else {
+            $nullable = false;
+        }
+
+        $schema = [
             'type' => 'array',
             'items' => $this->parse($definition[0]),
         ];
+
+        return $this->makeNullableSchema($schema, $nullable);
     }
 
     protected function parseInputType($definition)
@@ -409,6 +421,8 @@ class TypeParser
             $cached[$key] = $this->parseMap($definition);
         } elseif (is_subclass_of($newDefinition, UnionType::class)) {
             $cached[$key] = $this->parseUnion($definition);
+        } elseif ($newDefinition[0] === '[' && $newDefinition[strlen($newDefinition) - 1] === ']') {
+            $cached[$key] = $this->parseArray($definition);
         } else {
             $cached[$key] = $this->parseScalar($definition);
         }

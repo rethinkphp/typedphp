@@ -397,6 +397,127 @@ class TypeParser
         ];
     }
 
+    protected function isLiteralObject(string $definition): bool
+    {
+        $core = trim($definition, '?');
+        return strlen($core) > 1 && $core[0] === '{' && $core[strlen($core) - 1] === '}';
+    }
+
+    /**
+     * Split the inner content of a literal object into individual field strings,
+     * respecting nesting of {} and [].
+     */
+    protected function splitLiteralObjectFields(string $inner): array
+    {
+        $fields = [];
+        $current = '';
+        $depth = 0;
+
+        for ($i = 0; $i < strlen($inner); $i++) {
+            $c = $inner[$i];
+            if ($c === '{' || $c === '[') {
+                $depth++;
+                $current .= $c;
+            } elseif ($c === '}' || $c === ']') {
+                $depth--;
+                $current .= $c;
+            } elseif ($c === ',' && $depth === 0) {
+                $fields[] = $current;
+                $current = '';
+            } else {
+                $current .= $c;
+            }
+        }
+
+        if (trim($current) !== '') {
+            $fields[] = $current;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Parse a type expression that appears as a field value inside a literal object.
+     * Handles nested literal objects, arrays of literal objects, and scalar types.
+     */
+    protected function parseLiteralTypeExpr(string $typeExpr): array
+    {
+        $core = trim($typeExpr, '?');
+        $nullable = $this->isNullable($typeExpr);
+
+        if ($core[0] === '{') {
+            return $this->parseLiteralObject($typeExpr);
+        }
+
+        if ($core[0] === '[') {
+            $innerType = trim(substr($core, 1, -1));
+            if (strlen($innerType) > 0 && $innerType[0] === '{') {
+                $itemSchema = $this->parseLiteralObject($innerType);
+            } else {
+                $itemSchema = $this->parseString($innerType);
+            }
+            $schema = [
+                'type' => 'array',
+                'items' => $itemSchema,
+            ];
+            return $this->makeNullableSchema($schema, $nullable);
+        }
+
+        return $this->parseScalar($typeExpr);
+    }
+
+    /**
+     * Parse a literal inline object definition, e.g.:
+     *   {name: string, age: integer?, is_admin?: boolean}
+     *
+     * - "field?: type"  → field is optional (not in required)
+     * - "field: type?"  → field is nullable
+     */
+    protected function parseLiteralObject(string $definition): array
+    {
+        $nullable = $this->isNullable($definition);
+        if ($nullable) {
+            $definition = substr($definition, 0, -1);
+        }
+
+        // Strip outer { }
+        $inner = substr($definition, 1, -1);
+
+        $rawFields = $this->splitLiteralObjectFields($inner);
+
+        $properties = [];
+        $requiredFields = [];
+
+        foreach ($rawFields as $rawField) {
+            $rawField = trim($rawField);
+            $colonPos = strpos($rawField, ':');
+            $fieldName = trim(substr($rawField, 0, $colonPos));
+            $typeExpr  = trim(substr($rawField, $colonPos + 1));
+
+            $optional = false;
+            if (substr($fieldName, -1) === '?') {
+                $optional = true;
+                $fieldName = substr($fieldName, 0, -1);
+            }
+
+            $properties[$fieldName] = $this->parseLiteralTypeExpr($typeExpr);
+
+            if (!$optional) {
+                $requiredFields[] = $fieldName;
+            }
+        }
+
+        $schema = [
+            'type' => 'object',
+            'properties' => (object)$properties,
+        ];
+        if ($requiredFields) {
+            $schema['required'] = $requiredFields;
+        }
+
+        return $this->makeNullableSchema($schema, $nullable);
+    }
+
     protected function parseString($definition)
     {
         static $cached = [];
@@ -423,6 +544,8 @@ class TypeParser
             $cached[$key] = $this->parseUnion($definition);
         } elseif ($newDefinition[0] === '[' && $newDefinition[strlen($newDefinition) - 1] === ']') {
             $cached[$key] = $this->parseArray($definition);
+        } elseif ($this->isLiteralObject($definition)) {
+            $cached[$key] = $this->parseLiteralObject($definition);
         } else {
             $cached[$key] = $this->parseScalar($definition);
         }

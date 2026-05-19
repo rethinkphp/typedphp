@@ -147,6 +147,58 @@ class TypeTest extends TestCase
                     ],
                 ]
             ],
+            'literal_object_basic' => [
+                '{name: string, age: integer?, is_admin?: boolean}',
+                [
+                    'type' => 'object',
+                    'properties' => (object)[
+                        'name' => ['type' => 'string'],
+                        'age' => [
+                            'type' => ['integer', 'null'],
+                        ],
+                        'is_admin' => ['type' => 'boolean'],
+                    ],
+                    'required' => ['name', 'age'],
+                ]
+            ],
+            'literal_object_with_array_fields' => [
+                '{fields: [{id: integer, name: string}]}',
+                [
+                    'type' => 'object',
+                    'properties' => (object)[
+                        'fields' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => (object)[
+                                    'id' => ['type' => 'integer'],
+                                    'name' => ['type' => 'string'],
+                                ],
+                                'required' => ['id', 'name'],
+                            ],
+                        ],
+                    ],
+                    'required' => ['fields'],
+                ],
+            ],
+            'literal_object_with_nested' => [
+                '{user: {id: integer, name: string, is_admin?: boolean}}',
+                [
+                    'type' => 'object',
+                    'properties' => (object)[
+                        'user' => [
+                            'type' => 'object',
+                            'properties' => (object)[
+                                'id' => ['type' => 'integer'],
+                                'name' => ['type' => 'string'],
+                                'is_admin' => ['type' => 'boolean'],
+                            ],
+                            'required' => ['id', 'name'],
+                        ],
+                    ],
+                    'required' => ['user']
+                ]
+            ],
             [
                 Enum001Type::class,
                 [

@@ -250,7 +250,9 @@ class TypeParser
 
                 $sharedSchemas = $definition::referencedSchemas();
                 foreach ($sharedSchemas as $schemaName => $sharedSchema) {
-                    $this->registerSchema($schemaName, $sharedSchema);
+                    if (!isset($this->schemas[$schemaName])) {
+                        $this->registerSchema($schemaName, $sharedSchema);
+                    }
                 }
             }
 

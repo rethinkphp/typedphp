@@ -247,6 +247,11 @@ class TypeParser
 
             if ($reflection->isSubclassOf(DynamicType::class)) {
                 $properties = array_merge($properties, $definition::fields());
+
+                $sharedSchemas = $definition::referencedSchemas();
+                foreach ($sharedSchemas as $schemaName => $sharedSchema) {
+                    $this->registerSchema($schemaName, $sharedSchema);
+                }
             }
 
             $schema = [
@@ -504,10 +509,14 @@ class TypeParser
             return $cached[$key];
         }
 
+        if (is_subclass_of($newDefinition, DynamicType::class)) {
+            return $this->parseObject($definition); // no cache for DynamicType
+        }
+
         if (is_subclass_of($newDefinition, ProductType::class)) {
             $cached[$key] = $this->parseObject($definition);
         } elseif (is_subclass_of($newDefinition, SumType::class)) {
-            $cached[$key]=  $this->parseEnum($definition);
+            $cached[$key] = $this->parseEnum($definition);
         } elseif (is_subclass_of($newDefinition, MapType::class)) {
             $cached[$key] = $this->parseMap($definition);
         } elseif (is_subclass_of($newDefinition, UnionType::class)) {

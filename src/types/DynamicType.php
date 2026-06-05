@@ -15,4 +15,14 @@ abstract class DynamicType extends ProductType
      * @return array<string, array>
      */
     abstract public static function fields(): array;
+
+    /**
+     * Returns a list of referenced schemas.
+     * 
+     * @return array<string, array>
+     */
+    public static function referencedSchemas(): array
+    {
+        return [];
+    }
 }

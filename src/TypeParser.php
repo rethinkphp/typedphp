@@ -39,6 +39,7 @@ class TypeParser
     protected $schemas = [];
 
     protected $object_chains = [];
+    protected $cached = [];
 
     public function __construct($mode)
     {
@@ -497,7 +498,6 @@ class TypeParser
 
     protected function parseString($definition)
     {
-        static $cached = [];
         $newDefinition = trim($definition, '?');
 
         $key = $definition;
@@ -507,8 +507,8 @@ class TypeParser
 
         $key = $this->mode & self::MODE_REF_SCHEMA ? 'ref:' . $key : $key;
 
-        if (isset($cached[$key])) {
-            return $cached[$key];
+        if (isset($this->cached[$key])) {
+            return $this->cached[$key];
         }
 
         if (is_subclass_of($newDefinition, DynamicType::class)) {
@@ -516,21 +516,21 @@ class TypeParser
         }
 
         if (is_subclass_of($newDefinition, ProductType::class)) {
-            $cached[$key] = $this->parseObject($definition);
+            $this->cached[$key] = $this->parseObject($definition);
         } elseif (is_subclass_of($newDefinition, SumType::class)) {
-            $cached[$key] = $this->parseEnum($definition);
+            $this->cached[$key] = $this->parseEnum($definition);
         } elseif (is_subclass_of($newDefinition, MapType::class)) {
-            $cached[$key] = $this->parseMap($definition);
+            $this->cached[$key] = $this->parseMap($definition);
         } elseif (is_subclass_of($newDefinition, UnionType::class)) {
-            $cached[$key] = $this->parseUnion($definition);
+            $this->cached[$key] = $this->parseUnion($definition);
         } elseif ($newDefinition[0] === '[' && $newDefinition[strlen($newDefinition) - 1] === ']') {
-            $cached[$key] = $this->parseArray($definition);
+            $this->cached[$key] = $this->parseArray($definition);
         } elseif ($this->isLiteralObject($definition)) {
-            $cached[$key] = $this->parseLiteralObject($definition);
+            $this->cached[$key] = $this->parseLiteralObject($definition);
         } else {
-            $cached[$key] = $this->parseScalar($definition);
+            $this->cached[$key] = $this->parseScalar($definition);
         }
-        return $cached[$key];
+        return $this->cached[$key];
     }
 
     /**
